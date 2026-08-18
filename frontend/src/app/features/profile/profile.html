@@ -1,0 +1,25 @@
+<section class="max-w-2xl mx-auto px-5 py-16">
+  <p class="text-xs text-orange-600 font-semibold tracking-widest uppercase">Fiche client</p>
+  <h1 class="text-4xl font-extrabold text-ink-900 mt-2 mb-10">Mon profil</h1>
+
+  @if (auth.currentUser(); as user) {
+    <div class="bg-white border border-orange-100 rounded-2xl p-6 space-y-4 shadow-sm">
+      <div class="flex justify-between border-b border-orange-100 pb-3">
+        <span class="text-ink-500 text-sm">Nom</span>
+        <span class="font-semibold text-ink-900">{{ user.name }}</span>
+      </div>
+      <div class="flex justify-between border-b border-orange-100 pb-3">
+        <span class="text-ink-500 text-sm">E-mail</span>
+        <span class="font-semibold text-ink-900">{{ user.email }}</span>
+      </div>
+      <div class="flex justify-between border-b border-orange-100 pb-3">
+        <span class="text-ink-500 text-sm">Téléphone</span>
+        <span class="font-semibold text-ink-900">{{ user.phone ?? '—' }}</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-ink-500 text-sm">Statut</span>
+        <span class="font-semibold text-orange-600">{{ user.role === 'admin' ? 'Administrateur' : 'Client' }}</span>
+      </div>
+    </div>
+  }
+</section>

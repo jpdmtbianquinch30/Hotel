@@ -1,0 +1,61 @@
+<section class="max-w-5xl mx-auto px-5 py-16">
+  <p class="text-xs text-orange-600 font-semibold tracking-widest uppercase">Votre historique</p>
+  <h1 class="text-4xl font-extrabold text-ink-900 mt-2 mb-10">Mes réservations</h1>
+
+  @if (loading()) {
+    <p class="text-ink-500">Chargement...</p>
+  } @else if (error()) {
+    <p class="text-red-600">{{ error() }}</p>
+  } @else if (reservations().length === 0) {
+    <p class="text-ink-500">Vous n'avez aucune réservation pour le moment.</p>
+  } @else {
+    <div class="bg-white border border-orange-100 rounded-2xl overflow-hidden shadow-sm">
+      <table class="w-full text-sm">
+        <thead class="bg-orange-500 text-white">
+          <tr>
+            <th class="text-left px-4 py-3 font-medium">Chambre</th>
+            <th class="text-left px-4 py-3 font-medium">Arrivée</th>
+            <th class="text-left px-4 py-3 font-medium">Départ</th>
+            <th class="text-left px-4 py-3 font-medium">Montant</th>
+            <th class="text-left px-4 py-3 font-medium">Statut</th>
+            <th class="px-4 py-3"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (r of reservations(); track r.id) {
+            <tr class="border-t border-orange-100">
+              <td class="px-4 py-3">{{ r.room?.room_type ?? '—' }}</td>
+              <td class="px-4 py-3">{{ r.checkin }}</td>
+              <td class="px-4 py-3">{{ r.checkout }}</td>
+              <td class="px-4 py-3 font-semibold text-orange-600">{{ r.bill }} FCFA</td>
+              <td class="px-4 py-3">
+                <span
+                  class="text-xs font-semibold px-2 py-1 rounded-full"
+                  [class.bg-green-100]="r.status === 'confirmed' || r.status === 'checked_in'"
+                  [class.text-green-700]="r.status === 'confirmed' || r.status === 'checked_in'"
+                  [class.bg-red-100]="r.status === 'cancelled'"
+                  [class.text-red-700]="r.status === 'cancelled'"
+                  [class.bg-orange-50]="r.status === 'pending' || r.status === 'checked_out'"
+                  [class.text-orange-700]="r.status === 'pending' || r.status === 'checked_out'"
+                >
+                  {{ statusLabels[r.status] }}
+                </span>
+              </td>
+              <td class="px-4 py-3 text-right">
+                @if (r.status === 'pending' || r.status === 'confirmed') {
+                  <button
+                    (click)="cancel(r)"
+                    [disabled]="cancellingId() === r.id"
+                    class="text-red-600 hover:underline text-xs disabled:opacity-50"
+                  >
+                    {{ cancellingId() === r.id ? '...' : 'Annuler' }}
+                  </button>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

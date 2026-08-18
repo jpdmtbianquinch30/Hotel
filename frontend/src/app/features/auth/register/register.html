@@ -1,0 +1,64 @@
+<section class="max-w-md mx-auto px-5 py-16">
+  <div class="bg-white rounded-2xl p-8 border border-orange-100 shadow-sm">
+    <p class="text-xs text-orange-600 font-semibold tracking-widest uppercase">Nouvelle inscription</p>
+    <h1 class="text-3xl font-extrabold mt-2 mb-8 text-ink-900">Créer un compte</h1>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-5">
+      <div>
+        <label for="name" class="block text-sm mb-1.5 text-ink-700">Nom complet</label>
+        <input id="name" type="text" formControlName="name"
+          class="w-full rounded-lg bg-white border border-ink-300 px-3.5 py-2.5 text-ink-900 focus:border-orange-500 outline-none" />
+        @if (form.controls.name.invalid && form.controls.name.touched) {
+          <p class="text-red-600 text-xs mt-1">Le nom est requis.</p>
+        }
+      </div>
+
+      <div>
+        <label for="email" class="block text-sm mb-1.5 text-ink-700">Adresse e-mail</label>
+        <input id="email" type="email" formControlName="email"
+          class="w-full rounded-lg bg-white border border-ink-300 px-3.5 py-2.5 text-ink-900 focus:border-orange-500 outline-none" />
+        @if (form.controls.email.invalid && form.controls.email.touched) {
+          <p class="text-red-600 text-xs mt-1">Adresse e-mail valide requise.</p>
+        }
+      </div>
+
+      <div>
+        <label for="phone" class="block text-sm mb-1.5 text-ink-700">Téléphone (optionnel)</label>
+        <input id="phone" type="tel" formControlName="phone"
+          class="w-full rounded-lg bg-white border border-ink-300 px-3.5 py-2.5 text-ink-900 focus:border-orange-500 outline-none" />
+      </div>
+
+      <div>
+        <label for="password" class="block text-sm mb-1.5 text-ink-700">Mot de passe</label>
+        <input id="password" type="password" formControlName="password"
+          class="w-full rounded-lg bg-white border border-ink-300 px-3.5 py-2.5 text-ink-900 focus:border-orange-500 outline-none" />
+        @if (form.controls.password.invalid && form.controls.password.touched) {
+          <p class="text-red-600 text-xs mt-1">8 caractères minimum.</p>
+        }
+      </div>
+
+      <div>
+        <label for="password_confirmation" class="block text-sm mb-1.5 text-ink-700">Confirmer le mot de passe</label>
+        <input id="password_confirmation" type="password" formControlName="password_confirmation"
+          class="w-full rounded-lg bg-white border border-ink-300 px-3.5 py-2.5 text-ink-900 focus:border-orange-500 outline-none" />
+        @if (form.errors?.['mismatch'] && form.controls.password_confirmation.touched) {
+          <p class="text-red-600 text-xs mt-1">Les mots de passe ne correspondent pas.</p>
+        }
+      </div>
+
+      @if (error()) {
+        <p class="text-red-600 text-sm">{{ error() }}</p>
+      }
+
+      <button type="submit" [disabled]="loading()"
+        class="w-full bg-orange-500 text-white font-semibold py-2.5 rounded-lg hover:bg-orange-600 transition-colors disabled:opacity-60">
+        {{ loading() ? 'Création en cours...' : 'Créer mon compte' }}
+      </button>
+    </form>
+
+    <p class="text-sm text-ink-500 mt-6 text-center">
+      Déjà inscrit ?
+      <a routerLink="/connexion" class="text-orange-600 font-medium hover:underline">Connectez-vous</a>
+    </p>
+  </div>
+</section>

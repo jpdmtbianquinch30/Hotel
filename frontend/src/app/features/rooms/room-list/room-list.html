@@ -1,0 +1,132 @@
+<section class="max-w-6xl mx-auto px-5 py-16">
+  <p class="text-xs text-orange-600 font-semibold tracking-widest uppercase">Catalogue</p>
+  <h1 class="text-4xl font-extrabold text-ink-900 mt-2 mb-10">Nos chambres</h1>
+
+  @if (loading()) {
+    <p class="text-ink-500">Chargement des chambres...</p>
+  } @else if (loadError()) {
+    <p class="text-red-600">{{ loadError() }}</p>
+  } @else if (rooms().length === 0) {
+    <p class="text-ink-500">Aucune chambre disponible pour le moment.</p>
+  } @else {
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      @for (room of rooms(); track room.id) {
+        <article class="bg-white border border-orange-100 rounded-2xl overflow-hidden flex flex-col shadow-sm">
+          <div class="h-44 bg-orange-50 flex items-center justify-center">
+            @if (room.photo) {
+              <img [src]="room.photo" [alt]="room.room_type" class="w-full h-full object-cover" />
+            } @else {
+              <span class="font-extrabold text-orange-200 text-2xl">{{ room.room_type }}</span>
+            }
+          </div>
+          <div class="p-5 flex flex-col flex-1">
+            <h2 class="text-xl font-bold text-ink-900">{{ room.room_type }}</h2>
+            @if (room.description) {
+              <p class="text-ink-500 text-sm mt-2 flex-1">{{ room.description }}</p>
+            }
+            <div class="flex items-center justify-between mt-4 pt-4 border-t border-orange-100">
+              <span class="text-lg font-bold text-orange-600">{{ room.price }} FCFA<span class="text-xs font-normal text-ink-500">/nuit</span></span>
+              @if (room.is_available) {
+                <span class="text-xs font-semibold text-green-600">Disponible</span>
+              } @else {
+                <span class="text-xs font-semibold text-red-600">Complet</span>
+              }
+            </div>
+            <button
+              (click)="openReservation(room)"
+              [disabled]="!room.is_available"
+              class="mt-4 w-full bg-orange-500 text-white font-semibold py-2.5 rounded-lg hover:bg-orange-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              Réserver
+            </button>
+          </div>
+        </article>
+      }
+    </div>
+  }
+</section>
+
+@if (selectedRoom(); as room) {
+  <div class="fixed inset-0 bg-ink-900/60 flex items-center justify-center p-4 z-50" (click)="closeModal()">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 max-h-[90vh] overflow-y-auto" (click)="$event.stopPropagation()">
+      @if (success()) {
+        <p class="text-xs text-green-600 font-semibold uppercase tracking-widest">Réservation enregistrée</p>
+        <h2 class="text-2xl font-extrabold text-ink-900 mt-2">C'est confirmé !</h2>
+        <p class="text-ink-500 text-sm mt-3">
+          Votre réservation pour la chambre <strong>{{ room.room_type }}</strong> a bien été enregistrée.
+        </p>
+        <div class="flex gap-3 mt-6">
+          <a routerLink="/mes-reservations" (click)="closeModal()"
+            class="flex-1 text-center bg-orange-500 text-white font-semibold py-2.5 rounded-lg hover:bg-orange-600 transition-colors">
+            Voir mes réservations
+          </a>
+          <button (click)="closeModal()" class="flex-1 border border-ink-300 py-2.5 rounded-lg hover:bg-orange-50 transition-colors">
+            Fermer
+          </button>
+        </div>
+      } @else {
+        <p class="text-xs text-orange-600 font-semibold uppercase tracking-widest">Nouvelle réservation</p>
+        <h2 class="text-2xl font-extrabold text-ink-900 mt-2 mb-6">{{ room.room_type }}</h2>
+
+        <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-4">
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm mb-1.5 text-ink-700">Prénom</label>
+              <input formControlName="firstname" type="text"
+                class="w-full rounded-lg border border-ink-300 px-3 py-2 focus:border-orange-500 outline-none" />
+            </div>
+            <div>
+              <label class="block text-sm mb-1.5 text-ink-700">Nom</label>
+              <input formControlName="lastname" type="text"
+                class="w-full rounded-lg border border-ink-300 px-3 py-2 focus:border-orange-500 outline-none" />
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-sm mb-1.5 text-ink-700">Adresse (optionnel)</label>
+            <input formControlName="address" type="text"
+              class="w-full rounded-lg border border-ink-300 px-3 py-2 focus:border-orange-500 outline-none" />
+          </div>
+
+          <div>
+            <label class="block text-sm mb-1.5 text-ink-700">Téléphone (optionnel)</label>
+            <input formControlName="contact_no" type="tel"
+              class="w-full rounded-lg border border-ink-300 px-3 py-2 focus:border-orange-500 outline-none" />
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm mb-1.5 text-ink-700">Arrivée</label>
+              <input formControlName="checkin" type="date"
+                class="w-full rounded-lg border border-ink-300 px-3 py-2 focus:border-orange-500 outline-none text-sm" />
+            </div>
+            <div>
+              <label class="block text-sm mb-1.5 text-ink-700">Départ</label>
+              <input formControlName="checkout" type="date"
+                class="w-full rounded-lg border border-ink-300 px-3 py-2 focus:border-orange-500 outline-none text-sm" />
+            </div>
+          </div>
+
+          <label class="flex items-center gap-2 text-sm text-ink-700">
+            <input formControlName="extra_bed" type="checkbox" class="accent-orange-500" />
+            Lit supplémentaire
+          </label>
+
+          @if (formError()) {
+            <p class="text-red-600 text-sm">{{ formError() }}</p>
+          }
+
+          <div class="flex gap-3 pt-2">
+            <button type="submit" [disabled]="submitting()"
+              class="flex-1 bg-orange-500 text-white font-semibold py-2.5 rounded-lg hover:bg-orange-600 transition-colors disabled:opacity-60">
+              {{ submitting() ? 'Enregistrement...' : 'Confirmer la réservation' }}
+            </button>
+            <button type="button" (click)="closeModal()" class="border border-ink-300 px-5 rounded-lg hover:bg-orange-50 transition-colors">
+              Annuler
+            </button>
+          </div>
+        </form>
+      }
+    </div>
+  </div>
+}
