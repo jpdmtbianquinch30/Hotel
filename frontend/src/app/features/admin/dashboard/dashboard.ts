@@ -3,6 +3,8 @@ import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Room, RoomPayload } from '../../../core/models/room.model';
 import { GALLERY_CATEGORIES, Gallery, GalleryPayload } from '../../../core/models/gallery.model';
+import { User } from '../../../core/models/user.model';
+import { UserService, UserPayload } from '../../../core/services/user.service';
 import {
   Reservation,
   RESERVATION_STATUS_LABELS,
@@ -12,7 +14,7 @@ import { RoomService } from '../../../core/services/room.service';
 import { ReservationService } from '../../../core/services/reservation.service';
 import { GalleryService } from '../../../core/services/gallery.service';
 
-type Tab = 'rooms' | 'gallery' | 'reservations';
+type Tab = 'rooms' | 'gallery' | 'reservations' | 'users';
 
 @Component({
   selector: 'app-dashboard',
@@ -24,6 +26,7 @@ export class Dashboard {
   private readonly roomService = inject(RoomService);
   private readonly reservationService = inject(ReservationService);
   private readonly galleryService = inject(GalleryService);
+    private readonly userService = inject(UserService);
   private readonly fb = inject(FormBuilder);
 
   readonly tab = signal<Tab>('rooms');
@@ -90,11 +93,119 @@ export class Dashboard {
     this.fetchRooms();
     this.fetchGallery();
     this.fetchReservations();
+   this.fetchUsers();
   }
 
   setTab(tab: Tab): void {
     this.tab.set(tab);
   }
+    // --- Utilisateurs : gestion ---
+
+  fetchUsers(): void {
+    this.usersLoading.set(true);
+    this.userService.list().subscribe({
+      next: (list) => {
+        this.users.set(list);
+        this.usersLoading.set(false);
+      },
+      error: () => {
+        this.usersError.set('Impossible de charger les utilisateurs.');
+        this.usersLoading.set(false);
+      },
+    });
+  }
+
+  openCreateUser(): void {
+    this.userFormError.set(null);
+    this.userForm.reset({ name: '', email: '', password: '', phone: '', role: 'client' });
+    this.userModalOpen.set(true);
+  }
+
+  closeUserModal(): void {
+    this.userModalOpen.set(false);
+  }
+
+  submitUser(): void {
+    if (this.userForm.invalid) {
+      this.userForm.markAllAsTouched();
+      return;
+    }
+
+    const raw = this.userForm.getRawValue();
+    const payload: UserPayload = {
+      name: raw.name,
+      email: raw.email,
+      password: raw.password,
+      phone: raw.phone || null,
+      role: raw.role,
+    };
+
+    this.userSubmitting.set(true);
+    this.userFormError.set(null);
+
+    this.userService.create(payload).subscribe({
+      next: () => {
+        this.userSubmitting.set(false);
+        this.userModalOpen.set(false);
+        this.fetchUsers();
+      },
+      error: (err) => {
+        this.userSubmitting.set(false);
+        this.userFormError.set(err?.error?.message ?? "La création de l'utilisateur a échoué.");
+      },
+    });
+  }
+
+  toggleRole(user: User): void {
+    const newRole = user.role === 'admin' ? 'client' : 'admin';
+    if (!confirm(`Passer ${user.name} en "${newRole}" ?`)) return;
+
+    this.updatingUserId.set(user.id);
+    this.userService.update(user.id, { role: newRole }).subscribe({
+      next: (updated) => {
+        this.updatingUserId.set(null);
+        this.users.update((list) => list.map((u) => (u.id === updated.id ? updated : u)));
+      },
+      error: (err) => {
+        this.updatingUserId.set(null);
+        this.usersError.set(err?.error?.message ?? 'Impossible de changer le rôle.');
+      },
+    });
+  }
+
+  deleteUser(user: User): void {
+    if (!confirm(`Supprimer le compte de "${user.name}" ?`)) return;
+
+    this.deletingUserId.set(user.id);
+    this.userService.delete(user.id).subscribe({
+      next: () => {
+        this.deletingUserId.set(null);
+        this.fetchUsers();
+      },
+      error: (err) => {
+        this.deletingUserId.set(null);
+        this.usersError.set(err?.error?.message ?? 'Impossible de supprimer cet utilisateur.');
+      },
+    });
+  }
+    // --- Utilisateurs ---
+  readonly users = signal<User[]>([]);
+  readonly usersLoading = signal(true);
+  readonly usersError = signal<string | null>(null);
+  readonly updatingUserId = signal<number | null>(null);
+  readonly deletingUserId = signal<number | null>(null);
+
+  readonly userModalOpen = signal(false);
+  readonly userSubmitting = signal(false);
+  readonly userFormError = signal<string | null>(null);
+
+  readonly userForm = this.fb.nonNullable.group({
+    name: ['', Validators.required],
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', [Validators.required, Validators.minLength(8)]],
+    phone: [''],
+    role: ['client' as 'admin' | 'client', Validators.required],
+  });
 
   // --- Chambres : CRUD ---
 
@@ -320,6 +431,7 @@ export class Dashboard {
     const request = editing
       ? this.galleryService.update(editing.id, payload)
       : this.galleryService.create(payload);
+      
 
     request.subscribe({
       next: () => {
@@ -399,4 +511,4 @@ export class Dashboard {
       },
     });
   }
-}
+} 

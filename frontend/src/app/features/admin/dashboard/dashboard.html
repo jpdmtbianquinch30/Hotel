@@ -33,6 +33,16 @@
     >
       Réservations
     </button>
+        <button
+      (click)="setTab('users')"
+      class="px-4 py-2.5 text-sm font-semibold border-b-2 -mb-px transition-colors"
+      [class.border-orange-500]="tab() === 'users'"
+      [class.text-orange-600]="tab() === 'users'"
+      [class.border-transparent]="tab() !== 'users'"
+      [class.text-ink-500]="tab() !== 'users'"
+    >
+      Utilisateurs
+    </button>
   </div>
 
   <!-- ===== Onglet Chambres ===== -->
@@ -214,6 +224,77 @@
   }
 </section>
 
+  <!-- ===== Onglet Utilisateurs ===== -->
+  @if (tab() === 'users') {
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="text-xl font-bold text-ink-900">Utilisateurs & administrateurs</h2>
+      <button
+        (click)="openCreateUser()"
+        class="bg-orange-500 text-white font-semibold text-sm px-4 py-2.5 rounded-lg hover:bg-orange-600 transition-colors"
+      >
+        + Nouvel utilisateur
+      </button>
+    </div>
+
+    @if (usersLoading()) {
+      <p class="text-ink-500">Chargement...</p>
+    } @else if (usersError()) {
+      <p class="text-red-600">{{ usersError() }}</p>
+    } @else if (users().length === 0) {
+      <p class="text-ink-500">Aucun utilisateur pour le moment.</p>
+    } @else {
+      <div class="bg-white border border-orange-100 rounded-2xl overflow-hidden shadow-sm">
+        <table class="w-full text-sm">
+          <thead class="bg-orange-500 text-white">
+            <tr>
+              <th class="text-left px-4 py-3 font-medium">Nom</th>
+              <th class="text-left px-4 py-3 font-medium">Email</th>
+              <th class="text-left px-4 py-3 font-medium">Téléphone</th>
+              <th class="text-left px-4 py-3 font-medium">Rôle</th>
+              <th class="text-left px-4 py-3 font-medium">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (u of users(); track u.id) {
+              <tr class="border-t border-orange-100">
+                <td class="px-4 py-3">{{ u.name }}</td>
+                <td class="px-4 py-3">{{ u.email }}</td>
+                <td class="px-4 py-3">{{ u.phone ?? '—' }}</td>
+                <td class="px-4 py-3">
+                  <span
+                    class="text-xs font-semibold px-2 py-1 rounded-full"
+                    [class.bg-orange-100]="u.role === 'admin'"
+                    [class.text-orange-700]="u.role === 'admin'"
+                    [class.bg-ink-100]="u.role !== 'admin'"
+                    [class.text-ink-600]="u.role !== 'admin'"
+                  >
+                    {{ u.role === 'admin' ? 'Admin' : 'Client' }}
+                  </span>
+                </td>
+                <td class="px-4 py-3 flex gap-3">
+                  <button
+                    (click)="toggleRole(u)"
+                    [disabled]="updatingUserId() === u.id"
+                    class="text-xs font-semibold text-orange-600 hover:underline disabled:opacity-50"
+                  >
+                    {{ u.role === 'admin' ? 'Rétrograder' : 'Promouvoir admin' }}
+                  </button>
+                  <button
+                    (click)="deleteUser(u)"
+                    [disabled]="deletingUserId() === u.id"
+                    class="text-xs font-semibold text-red-600 hover:underline disabled:opacity-50"
+                  >
+                    Supprimer
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  }
+
 <!-- ===== Modal Galerie (création / édition) ===== -->
 @if (galleryModalOpen()) {
   <div class="fixed inset-0 bg-ink-900/60 flex items-center justify-center p-4 z-50" (click)="closeGalleryModal()">
@@ -284,6 +365,66 @@
           </button>
           <button type="button" (click)="closeGalleryModal()" class="border border-ink-300 px-5 rounded-lg hover:bg-orange-50 transition-colors">
             Annuler
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- ===== Modal Utilisateur (création) ===== -->
+@if (userModalOpen()) {
+  <div class="fixed inset-0 bg-ink-900/60 flex items-center justify-center p-4 z-50" (click)="closeUserModal()">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 max-h-[90vh] overflow-y-auto" (click)="$event.stopPropagation()">
+      <p class="text-xs text-orange-600 font-semibold uppercase tracking-widest">Nouvel utilisateur</p>
+      <h2 class="text-2xl font-extrabold text-ink-900 mt-2 mb-6">Créer un compte</h2>
+
+      <form [formGroup]="userForm" (ngSubmit)="submitUser()" class="space-y-4">
+        <div>
+          <label for="u-name" class="block text-sm mb-1.5 text-ink-700">Nom</label>
+          <input id="u-name" formControlName="name" type="text"
+            class="w-full rounded-lg border border-ink-300 px-3 py-2 focus:border-orange-500 outline-none" />
+        </div>
+
+        <div>
+          <label for="u-email" class="block text-sm mb-1.5 text-ink-700">Email</label>
+          <input id="u-email" formControlName="email" type="email"
+            class="w-full rounded-lg border border-ink-300 px-3 py-2 focus:border-orange-500 outline-none" />
+        </div>
+
+        <div>
+          <label for="u-password" class="block text-sm mb-1.5 text-ink-700">Mot de passe</label>
+          <input id="u-password" formControlName="password" type="password"
+            class="w-full rounded-lg border border-ink-300 px-3 py-2 focus:border-orange-500 outline-none" />
+        </div>
+
+        <div>
+          <label for="u-phone" class="block text-sm mb-1.5 text-ink-700">Téléphone (optionnel)</label>
+          <input id="u-phone" formControlName="phone" type="text"
+            class="w-full rounded-lg border border-ink-300 px-3 py-2 focus:border-orange-500 outline-none" />
+        </div>
+
+        <div>
+          <label for="u-role" class="block text-sm mb-1.5 text-ink-700">Rôle</label>
+          <select id="u-role" formControlName="role"
+            class="w-full rounded-lg border border-ink-300 px-3 py-2 focus:border-orange-500 outline-none bg-white">
+            <option value="client">Client</option>
+            <option value="admin">Administrateur</option>
+          </select>
+        </div>
+
+        @if (userFormError()) {
+          <p class="text-red-600 text-sm">{{ userFormError() }}</p>
+        }
+
+        <div class="flex gap-3 pt-2">
+          <button type="button" (click)="closeUserModal()"
+            class="flex-1 border border-ink-300 text-ink-700 font-semibold text-sm py-2.5 rounded-lg hover:bg-ink-50">
+            Annuler
+          </button>
+          <button type="submit" [disabled]="userSubmitting()"
+            class="flex-1 bg-orange-500 text-white font-semibold text-sm py-2.5 rounded-lg hover:bg-orange-600 disabled:opacity-50">
+            {{ userSubmitting() ? 'Création...' : 'Créer' }}
           </button>
         </div>
       </form>
