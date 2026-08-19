@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Room, RoomPayload } from '../../../core/models/room.model';
+import { GALLERY_CATEGORIES, Gallery, GalleryPayload } from '../../../core/models/gallery.model';
 import {
   Reservation,
   RESERVATION_STATUS_LABELS,
@@ -9,8 +10,9 @@ import {
 } from '../../../core/models/reservation.model';
 import { RoomService } from '../../../core/services/room.service';
 import { ReservationService } from '../../../core/services/reservation.service';
+import { GalleryService } from '../../../core/services/gallery.service';
 
-type Tab = 'rooms' | 'reservations';
+type Tab = 'rooms' | 'gallery' | 'reservations';
 
 @Component({
   selector: 'app-dashboard',
@@ -21,6 +23,7 @@ type Tab = 'rooms' | 'reservations';
 export class Dashboard {
   private readonly roomService = inject(RoomService);
   private readonly reservationService = inject(ReservationService);
+  private readonly galleryService = inject(GalleryService);
   private readonly fb = inject(FormBuilder);
 
   readonly tab = signal<Tab>('rooms');
@@ -55,6 +58,28 @@ export class Dashboard {
     is_available: [true],
   });
 
+  // --- Galerie ---
+  readonly galleryCategories = GALLERY_CATEGORIES;
+  readonly galleryItems = signal<Gallery[]>([]);
+  readonly galleryLoading = signal(true);
+  readonly galleryError = signal<string | null>(null);
+
+  readonly galleryModalOpen = signal(false);
+  readonly editingGalleryItem = signal<Gallery | null>(null);
+  readonly gallerySubmitting = signal(false);
+  readonly galleryFormError = signal<string | null>(null);
+  readonly deletingGalleryId = signal<number | null>(null);
+
+  readonly selectedImage = signal<File | null>(null);
+  readonly imagePreview = signal<string | null>(null);
+
+  readonly galleryForm = this.fb.nonNullable.group({
+    title: ['', Validators.required],
+    category: ['', Validators.required],
+    description: [''],
+    is_published: [false],
+  });
+
   // --- Réservations ---
   readonly reservations = signal<Reservation[]>([]);
   readonly reservationsLoading = signal(true);
@@ -63,6 +88,7 @@ export class Dashboard {
 
   constructor() {
     this.fetchRooms();
+    this.fetchGallery();
     this.fetchReservations();
   }
 
@@ -196,6 +222,145 @@ export class Dashboard {
       error: () => {
         this.deletingRoomId.set(null);
         this.roomsError.set('Impossible de supprimer cette chambre.');
+      },
+    });
+  }
+
+  // --- Galerie : CRUD ---
+
+  fetchGallery(): void {
+    this.galleryLoading.set(true);
+    this.galleryService.listAll().subscribe({
+      next: (items) => {
+        this.galleryItems.set(items);
+        this.galleryLoading.set(false);
+      },
+      error: () => {
+        this.galleryError.set('Impossible de charger la galerie.');
+        this.galleryLoading.set(false);
+      },
+    });
+  }
+
+  openCreateGalleryItem(): void {
+    this.editingGalleryItem.set(null);
+    this.galleryFormError.set(null);
+    this.selectedImage.set(null);
+    this.imagePreview.set(null);
+    this.galleryForm.reset({
+      title: '',
+      category: '',
+      description: '',
+      is_published: false,
+    });
+    this.galleryModalOpen.set(true);
+  }
+
+  openEditGalleryItem(item: Gallery): void {
+    this.editingGalleryItem.set(item);
+    this.galleryFormError.set(null);
+    this.selectedImage.set(null);
+    this.imagePreview.set(item.image);
+    this.galleryForm.reset({
+      title: item.title,
+      category: item.category,
+      description: item.description ?? '',
+      is_published: item.is_published,
+    });
+    this.galleryModalOpen.set(true);
+  }
+
+  closeGalleryModal(): void {
+    this.galleryModalOpen.set(false);
+  }
+
+  onImageSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0] ?? null;
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      this.galleryFormError.set('Le fichier sélectionné doit être une image.');
+      return;
+    }
+
+    this.galleryFormError.set(null);
+    this.selectedImage.set(file);
+
+    const reader = new FileReader();
+    reader.onload = () => this.imagePreview.set(reader.result as string);
+    reader.readAsDataURL(file);
+  }
+
+  submitGalleryItem(): void {
+    if (this.galleryForm.invalid) {
+      this.galleryForm.markAllAsTouched();
+      return;
+    }
+
+    const editing = this.editingGalleryItem();
+
+    if (!editing && !this.selectedImage()) {
+      this.galleryFormError.set('Une image est requise.');
+      return;
+    }
+
+    const raw = this.galleryForm.getRawValue();
+    const payload: GalleryPayload = {
+      title: raw.title,
+      category: raw.category,
+      description: raw.description || null,
+      is_published: raw.is_published,
+      image: this.selectedImage(),
+    };
+
+    this.gallerySubmitting.set(true);
+    this.galleryFormError.set(null);
+
+    const request = editing
+      ? this.galleryService.update(editing.id, payload)
+      : this.galleryService.create(payload);
+
+    request.subscribe({
+      next: () => {
+        this.gallerySubmitting.set(false);
+        this.galleryModalOpen.set(false);
+        this.fetchGallery();
+      },
+      error: (err) => {
+        this.gallerySubmitting.set(false);
+        this.galleryFormError.set(
+          err?.error?.message ?? "L'enregistrement de l'image a échoué."
+        );
+      },
+    });
+  }
+
+  togglePublish(item: Gallery): void {
+    this.galleryService.update(item.id, { is_published: !item.is_published }).subscribe({
+      next: (updated) => {
+        this.galleryItems.update((list) =>
+          list.map((g) => (g.id === updated.id ? updated : g))
+        );
+      },
+      error: () => {
+        this.galleryError.set('Impossible de changer la publication.');
+      },
+    });
+  }
+
+  deleteGalleryItem(item: Gallery): void {
+    if (!confirm(`Supprimer l'image "${item.title}" ?`)) return;
+
+    this.deletingGalleryId.set(item.id);
+    this.galleryService.delete(item.id).subscribe({
+      next: () => {
+        this.deletingGalleryId.set(null);
+        this.fetchGallery();
+      },
+      error: () => {
+        this.deletingGalleryId.set(null);
+        this.galleryError.set('Impossible de supprimer cette image.');
       },
     });
   }

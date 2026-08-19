@@ -20,6 +20,11 @@ export const routes: Routes = [
     loadComponent: () => import('./features/rooms/room-list/room-list').then((m) => m.RoomList),
   },
   {
+    path: 'galerie',
+    loadComponent: () =>
+      import('./features/gallery/gallery-list/gallery-list').then((m) => m.GalleryList),
+  },
+  {
     path: 'mes-reservations',
     canActivate: [authGuard],
     loadComponent: () =>

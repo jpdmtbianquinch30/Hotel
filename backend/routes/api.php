@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\GalleryController;
 use App\Http\Controllers\Api\ReservationController;
 use App\Http\Controllers\Api\RoomController;
 use Illuminate\Support\Facades\Route;
@@ -13,6 +14,10 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::get('/rooms', [RoomController::class, 'index']);
 Route::get('/rooms/{room}', [RoomController::class, 'show']);
 
+// Galerie : lecture publique (images publiées uniquement), gestion réservée à l'admin
+Route::get('/gallery', [GalleryController::class, 'index']);
+Route::get('/gallery/{gallery}', [GalleryController::class, 'show']);
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
@@ -23,6 +28,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/rooms/{room}', [RoomController::class, 'update']);
     Route::post('/rooms/{room}', [RoomController::class, 'update']);
     Route::delete('/rooms/{room}', [RoomController::class, 'destroy']);
+
+    Route::get('/gallery-admin', [GalleryController::class, 'adminIndex']);
+    Route::post('/gallery', [GalleryController::class, 'store']);
+    // POST avec _method=PUT (upload de fichier, cf. rooms)
+    Route::put('/gallery/{gallery}', [GalleryController::class, 'update']);
+    Route::post('/gallery/{gallery}', [GalleryController::class, 'update']);
+    Route::delete('/gallery/{gallery}', [GalleryController::class, 'destroy']);
 
     Route::get('/reservations', [ReservationController::class, 'index']);
     Route::post('/reservations', [ReservationController::class, 'store']);
