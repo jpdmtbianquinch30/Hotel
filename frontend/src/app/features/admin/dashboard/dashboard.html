@@ -1,11 +1,19 @@
 <section class="max-w-6xl mx-auto px-5 py-16">
-  <p class="text-xs text-orange-600 font-semibold tracking-widest uppercase">Espace administration</p>
-  <h1 class="text-4xl font-extrabold text-ink-900 mt-2 mb-8">Tableau de bord</h1>
+  <p class="text-xs text-orange-600 font-semibold tracking-widest uppercase">
+    Espace administration
+  </p>
 
-  <div class="flex gap-2 mb-8 border-b border-orange-100">
+  <h1 class="text-4xl font-extrabold text-ink-900 mt-2 mb-8">
+    Tableau de bord
+  </h1>
+
+  <!-- ===== Navigation des onglets ===== -->
+  <div class="flex gap-2 mb-8 border-b border-orange-100 overflow-x-auto">
+
+    <!-- Chambres -->
     <button
       (click)="setTab('rooms')"
-      class="px-4 py-2.5 text-sm font-semibold border-b-2 -mb-px transition-colors"
+      class="px-4 py-2.5 text-sm font-semibold border-b-2 -mb-px transition-colors whitespace-nowrap"
       [class.border-orange-500]="tab() === 'rooms'"
       [class.text-orange-600]="tab() === 'rooms'"
       [class.border-transparent]="tab() !== 'rooms'"
@@ -13,9 +21,11 @@
     >
       Chambres
     </button>
+
+    <!-- Galerie -->
     <button
       (click)="setTab('gallery')"
-      class="px-4 py-2.5 text-sm font-semibold border-b-2 -mb-px transition-colors"
+      class="px-4 py-2.5 text-sm font-semibold border-b-2 -mb-px transition-colors whitespace-nowrap"
       [class.border-orange-500]="tab() === 'gallery'"
       [class.text-orange-600]="tab() === 'gallery'"
       [class.border-transparent]="tab() !== 'gallery'"
@@ -23,9 +33,11 @@
     >
       Galerie
     </button>
+
+    <!-- Réservations -->
     <button
       (click)="setTab('reservations')"
-      class="px-4 py-2.5 text-sm font-semibold border-b-2 -mb-px transition-colors"
+      class="px-4 py-2.5 text-sm font-semibold border-b-2 -mb-px transition-colors whitespace-nowrap"
       [class.border-orange-500]="tab() === 'reservations'"
       [class.text-orange-600]="tab() === 'reservations'"
       [class.border-transparent]="tab() !== 'reservations'"
@@ -33,9 +45,11 @@
     >
       Réservations
     </button>
-        <button
+
+    <!-- Utilisateurs -->
+    <button
       (click)="setTab('users')"
-      class="px-4 py-2.5 text-sm font-semibold border-b-2 -mb-px transition-colors"
+      class="px-4 py-2.5 text-sm font-semibold border-b-2 -mb-px transition-colors whitespace-nowrap"
       [class.border-orange-500]="tab() === 'users'"
       [class.text-orange-600]="tab() === 'users'"
       [class.border-transparent]="tab() !== 'users'"
@@ -43,12 +57,33 @@
     >
       Utilisateurs
     </button>
+
+    <!-- Règlements -->
+    <button
+      (click)="setTab('rules')"
+      class="px-4 py-2.5 text-sm font-semibold border-b-2 -mb-px transition-colors whitespace-nowrap"
+      [class.border-orange-500]="tab() === 'rules'"
+      [class.text-orange-600]="tab() === 'rules'"
+      [class.border-transparent]="tab() !== 'rules'"
+      [class.text-ink-500]="tab() !== 'rules'"
+    >
+      Règlements
+    </button>
+
   </div>
 
-  <!-- ===== Onglet Chambres ===== -->
+
+  <!-- ====================================================== -->
+  <!-- ===================== CHAMBRES ======================= -->
+  <!-- ====================================================== -->
+
   @if (tab() === 'rooms') {
+
     <div class="flex justify-between items-center mb-6">
-      <h2 class="text-xl font-bold text-ink-900">Catalogue des chambres</h2>
+      <h2 class="text-xl font-bold text-ink-900">
+        Catalogue des chambres
+      </h2>
+
       <button
         (click)="openCreateRoom()"
         class="bg-orange-500 text-white font-semibold text-sm px-4 py-2.5 rounded-lg hover:bg-orange-600 transition-colors"
@@ -58,38 +93,88 @@
     </div>
 
     @if (roomsLoading()) {
-      <p class="text-ink-500">Chargement...</p>
+
+      <p class="text-ink-500">
+        Chargement...
+      </p>
+
     } @else if (roomsError()) {
-      <p class="text-red-600">{{ roomsError() }}</p>
+
+      <p class="text-red-600">
+        {{ roomsError() }}
+      </p>
+
     } @else if (rooms().length === 0) {
-      <p class="text-ink-500">Aucune chambre pour le moment.</p>
+
+      <p class="text-ink-500">
+        Aucune chambre pour le moment.
+      </p>
+
     } @else {
+
       <div class="bg-white border border-orange-100 rounded-2xl overflow-hidden shadow-sm">
+
         <table class="w-full text-sm">
+
           <thead class="bg-orange-500 text-white">
             <tr>
-              <th class="text-left px-4 py-3 font-medium">Type</th>
-              <th class="text-left px-4 py-3 font-medium">Prix / nuit</th>
-              <th class="text-left px-4 py-3 font-medium">Disponibilité</th>
+              <th class="text-left px-4 py-3 font-medium">
+                Type
+              </th>
+
+              <th class="text-left px-4 py-3 font-medium">
+                Prix / nuit
+              </th>
+
+              <th class="text-left px-4 py-3 font-medium">
+                Disponibilité
+              </th>
+
               <th class="px-4 py-3"></th>
             </tr>
           </thead>
+
           <tbody>
+
             @for (room of rooms(); track room.id) {
+
               <tr class="border-t border-orange-100">
-                <td class="px-4 py-3 font-semibold text-ink-900">{{ room.room_type }}</td>
-                <td class="px-4 py-3">{{ room.price }} FCFA</td>
-                <td class="px-4 py-3">
-                  @if (room.is_available) {
-                    <span class="text-xs font-semibold text-green-600">Disponible</span>
-                  } @else {
-                    <span class="text-xs font-semibold text-red-600">Complet</span>
-                  }
+
+                <td class="px-4 py-3 font-semibold text-ink-900">
+                  {{ room.room_type }}
                 </td>
+
+                <td class="px-4 py-3">
+                  {{ room.price }} FCFA
+                </td>
+
+                <td class="px-4 py-3">
+
+                  @if (room.is_available) {
+
+                    <span class="text-xs font-semibold text-green-600">
+                      Disponible
+                    </span>
+
+                  } @else {
+
+                    <span class="text-xs font-semibold text-red-600">
+                      Complet
+                    </span>
+
+                  }
+
+                </td>
+
                 <td class="px-4 py-3 text-right space-x-3">
-                  <button (click)="openEditRoom(room)" class="text-orange-600 hover:underline text-xs font-medium">
+
+                  <button
+                    (click)="openEditRoom(room)"
+                    class="text-orange-600 hover:underline text-xs font-medium"
+                  >
                     Modifier
                   </button>
+
                   <button
                     (click)="deleteRoom(room)"
                     [disabled]="deletingRoomId() === room.id"
@@ -97,39 +182,79 @@
                   >
                     {{ deletingRoomId() === room.id ? '...' : 'Supprimer' }}
                   </button>
+
                 </td>
+
               </tr>
+
             }
+
           </tbody>
+
         </table>
+
       </div>
+
     }
+
   }
 
-  <!-- ===== Onglet Galerie ===== -->
+
+  <!-- ====================================================== -->
+  <!-- ====================== GALERIE ======================= -->
+  <!-- ====================================================== -->
+
   @if (tab() === 'gallery') {
+
     <div class="flex justify-between items-center mb-6">
-      <h2 class="text-xl font-bold text-ink-900">Images de la galerie</h2>
+
+      <h2 class="text-xl font-bold text-ink-900">
+        Images de la galerie
+      </h2>
+
       <button
         (click)="openCreateGalleryItem()"
         class="bg-orange-500 text-white font-semibold text-sm px-4 py-2.5 rounded-lg hover:bg-orange-600 transition-colors"
       >
         + Nouvelle image
       </button>
+
     </div>
 
     @if (galleryLoading()) {
-      <p class="text-ink-500">Chargement...</p>
+
+      <p class="text-ink-500">
+        Chargement...
+      </p>
+
     } @else if (galleryError()) {
-      <p class="text-red-600">{{ galleryError() }}</p>
+
+      <p class="text-red-600">
+        {{ galleryError() }}
+      </p>
+
     } @else if (galleryItems().length === 0) {
-      <p class="text-ink-500">Aucune image pour le moment.</p>
+
+      <p class="text-ink-500">
+        Aucune image pour le moment.
+      </p>
+
     } @else {
+
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+
         @for (item of galleryItems(); track item.id) {
+
           <div class="bg-white border border-orange-100 rounded-2xl overflow-hidden shadow-sm">
+
             <div class="relative h-40">
-              <img [src]="item.image" [alt]="item.title" class="w-full h-full object-cover" />
+
+              <img
+                [src]="item.image"
+                [alt]="item.title"
+                class="w-full h-full object-cover"
+              />
+
               <span
                 class="absolute top-2 left-2 text-xs font-semibold px-2 py-1 rounded-lg"
                 [class.bg-green-100]="item.is_published"
@@ -139,19 +264,37 @@
               >
                 {{ item.is_published ? 'Publiée' : 'Brouillon' }}
               </span>
+
             </div>
+
             <div class="p-4">
-              <p class="text-xs text-orange-600 font-semibold uppercase tracking-wide">{{ item.category }}</p>
-              <p class="font-semibold text-ink-900 mt-1">{{ item.title }}</p>
+
+              <p class="text-xs text-orange-600 font-semibold uppercase tracking-wide">
+                {{ item.category }}
+              </p>
+
+              <p class="font-semibold text-ink-900 mt-1">
+                {{ item.title }}
+              </p>
 
               <div class="flex justify-between items-center mt-4">
-                <button (click)="togglePublish(item)" class="text-xs font-medium text-orange-600 hover:underline">
+
+                <button
+                  (click)="togglePublish(item)"
+                  class="text-xs font-medium text-orange-600 hover:underline"
+                >
                   {{ item.is_published ? 'Dépublier' : 'Publier' }}
                 </button>
+
                 <div class="space-x-3">
-                  <button (click)="openEditGalleryItem(item)" class="text-orange-600 hover:underline text-xs font-medium">
+
+                  <button
+                    (click)="openEditGalleryItem(item)"
+                    class="text-orange-600 hover:underline text-xs font-medium"
+                  >
                     Modifier
                   </button>
+
                   <button
                     (click)="deleteGalleryItem(item)"
                     [disabled]="deletingGalleryId() === item.id"
@@ -159,50 +302,127 @@
                   >
                     {{ deletingGalleryId() === item.id ? '...' : 'Supprimer' }}
                   </button>
+
                 </div>
+
               </div>
+
             </div>
+
           </div>
+
         }
+
       </div>
+
     }
+
   }
 
-    <!-- ===== Onglet Réservations ===== -->
+
+  <!-- ====================================================== -->
+  <!-- =================== RESERVATIONS ===================== -->
+  <!-- ====================================================== -->
+
   @if (tab() === 'reservations') {
-    <h2 class="text-xl font-bold text-ink-900 mb-6">Toutes les réservations</h2>
+
+    <h2 class="text-xl font-bold text-ink-900 mb-6">
+      Toutes les réservations
+    </h2>
 
     @if (reservationsLoading()) {
-      <p class="text-ink-500">Chargement...</p>
+
+      <p class="text-ink-500">
+        Chargement...
+      </p>
+
     } @else if (reservationsError()) {
-      <p class="text-red-600">{{ reservationsError() }}</p>
+
+      <p class="text-red-600">
+        {{ reservationsError() }}
+      </p>
+
     } @else if (reservations().length === 0) {
-      <p class="text-ink-500">Aucune réservation pour le moment.</p>
+
+      <p class="text-ink-500">
+        Aucune réservation pour le moment.
+      </p>
+
     } @else {
+
       <div class="bg-white border border-orange-100 rounded-2xl overflow-hidden shadow-sm">
+
         <table class="w-full text-sm">
+
           <thead class="bg-orange-500 text-white">
+
             <tr>
-              <th class="text-left px-4 py-3 font-medium">Client</th>
-              <th class="text-left px-4 py-3 font-medium">Chambre</th>
-              <th class="text-left px-4 py-3 font-medium">Arrivée</th>
-              <th class="text-left px-4 py-3 font-medium">Départ</th>
-              <th class="text-left px-4 py-3 font-medium">Montant</th>
-              <th class="text-left px-4 py-3 font-medium">Statut</th>
+
+              <th class="text-left px-4 py-3 font-medium">
+                Client
+              </th>
+
+              <th class="text-left px-4 py-3 font-medium">
+                Chambre
+              </th>
+
+              <th class="text-left px-4 py-3 font-medium">
+                Arrivée
+              </th>
+
+              <th class="text-left px-4 py-3 font-medium">
+                Départ
+              </th>
+
+              <th class="text-left px-4 py-3 font-medium">
+                Montant
+              </th>
+
+              <th class="text-left px-4 py-3 font-medium">
+                Statut
+              </th>
+
             </tr>
+
           </thead>
+
           <tbody>
+
             @for (r of reservations(); track r.id) {
+
               <tr class="border-t border-orange-100">
+
                 <td class="px-4 py-3">
                   {{ r.guest?.firstname }} {{ r.guest?.lastname }}
                 </td>
-                <td class="px-4 py-3">{{ r.room?.room_type ?? '—' }}</td>
-                <td class="px-4 py-3">{{ r.checkin }}</td>
-                <td class="px-4 py-3">{{ r.checkout }}</td>
-                <td class="px-4 py-3 font-semibold text-orange-600">{{ r.bill }} FCFA</td>
+
                 <td class="px-4 py-3">
-                  <label for="status-{{ r.id }}" class="sr-only">Statut de la réservation de {{ r.guest?.firstname }} {{ r.guest?.lastname }}</label>
+                  {{ r.room?.room_type ?? '—' }}
+                </td>
+
+                <td class="px-4 py-3">
+                  {{ r.checkin }}
+                </td>
+
+                <td class="px-4 py-3">
+                  {{ r.checkout }}
+                </td>
+
+                <td class="px-4 py-3 font-semibold text-orange-600">
+                  {{ r.bill }} FCFA
+                </td>
+
+                <td class="px-4 py-3">
+
+                  <label
+                    for="status-{{ r.id }}"
+                    class="sr-only"
+                  >
+                    Statut de la réservation de
+                    {{ r.guest?.firstname }}
+                    {{ r.guest?.lastname }}
+                  </label>
+
                   <select
                     id="status-{{ r.id }}"
                     [value]="r.status"
@@ -210,56 +430,127 @@
                     [disabled]="updatingStatusId() === r.id"
                     class="text-xs font-medium rounded-lg border border-ink-300 px-2 py-1.5 focus:border-orange-500 outline-none disabled:opacity-50"
                   >
+
                     @for (status of statusOptions; track status) {
-                      <option [value]="status">{{ statusLabels[status] }}</option>
+
+                      <option [value]="status">
+                        {{ statusLabels[status] }}
+                      </option>
+
                     }
+
                   </select>
+
                 </td>
+
               </tr>
+
             }
+
           </tbody>
+
         </table>
+
       </div>
+
     }
+
   }
 
-  <!-- ===== Onglet Utilisateurs ===== -->
+
+  <!-- ====================================================== -->
+  <!-- ==================== UTILISATEURS ==================== -->
+  <!-- ====================================================== -->
+
   @if (tab() === 'users') {
+
     <div class="flex justify-between items-center mb-6">
-      <h2 class="text-xl font-bold text-ink-900">Utilisateurs & administrateurs</h2>
+
+      <h2 class="text-xl font-bold text-ink-900">
+        Utilisateurs & administrateurs
+      </h2>
+
       <button
         (click)="openCreateUser()"
         class="bg-orange-500 text-white font-semibold text-sm px-4 py-2.5 rounded-lg hover:bg-orange-600 transition-colors"
       >
         + Nouvel utilisateur
       </button>
+
     </div>
 
     @if (usersLoading()) {
-      <p class="text-ink-500">Chargement...</p>
+
+      <p class="text-ink-500">
+        Chargement...
+      </p>
+
     } @else if (usersError()) {
-      <p class="text-red-600">{{ usersError() }}</p>
+
+      <p class="text-red-600">
+        {{ usersError() }}
+      </p>
+
     } @else if (users().length === 0) {
-      <p class="text-ink-500">Aucun utilisateur pour le moment.</p>
+
+      <p class="text-ink-500">
+        Aucun utilisateur pour le moment.
+      </p>
+
     } @else {
+
       <div class="bg-white border border-orange-100 rounded-2xl overflow-hidden shadow-sm">
+
         <table class="w-full text-sm">
+
           <thead class="bg-orange-500 text-white">
+
             <tr>
-              <th class="text-left px-4 py-3 font-medium">Nom</th>
-              <th class="text-left px-4 py-3 font-medium">Email</th>
-              <th class="text-left px-4 py-3 font-medium">Téléphone</th>
-              <th class="text-left px-4 py-3 font-medium">Rôle</th>
-              <th class="text-left px-4 py-3 font-medium">Actions</th>
+
+              <th class="text-left px-4 py-3 font-medium">
+                Nom
+              </th>
+
+              <th class="text-left px-4 py-3 font-medium">
+                Email
+              </th>
+
+              <th class="text-left px-4 py-3 font-medium">
+                Téléphone
+              </th>
+
+              <th class="text-left px-4 py-3 font-medium">
+                Rôle
+              </th>
+
+              <th class="text-left px-4 py-3 font-medium">
+                Actions
+              </th>
+
             </tr>
+
           </thead>
+
           <tbody>
+
             @for (u of users(); track u.id) {
+
               <tr class="border-t border-orange-100">
-                <td class="px-4 py-3">{{ u.name }}</td>
-                <td class="px-4 py-3">{{ u.email }}</td>
-                <td class="px-4 py-3">{{ u.phone ?? '—' }}</td>
+
                 <td class="px-4 py-3">
+                  {{ u.name }}
+                </td>
+
+                <td class="px-4 py-3">
+                  {{ u.email }}
+                </td>
+
+                <td class="px-4 py-3">
+                  {{ u.phone ?? '—' }}
+                </td>
+
+                <td class="px-4 py-3">
+
                   <span
                     class="text-xs font-semibold px-2 py-1 rounded-full"
                     [class.bg-orange-100]="u.role === 'admin'"
@@ -269,164 +560,382 @@
                   >
                     {{ u.role === 'admin' ? 'Admin' : 'Client' }}
                   </span>
+
                 </td>
-                <td class="px-4 py-3 flex gap-3">
-                  <button
-                    (click)="toggleRole(u)"
-                    [disabled]="updatingUserId() === u.id"
-                    class="text-xs font-semibold text-orange-600 hover:underline disabled:opacity-50"
-                  >
-                    {{ u.role === 'admin' ? 'Rétrograder' : 'Promouvoir admin' }}
-                  </button>
-                  <button
-                    (click)="deleteUser(u)"
-                    [disabled]="deletingUserId() === u.id"
-                    class="text-xs font-semibold text-red-600 hover:underline disabled:opacity-50"
-                  >
-                    Supprimer
-                  </button>
-                      <button
-                        (click)="setTab('rules')"
-                        class="px-4 py-2.5 text-sm font-semibold border-b-2 -mb-px transition-colors"
-                        [class.border-orange-500]="tab() === 'rules'"
-                        [class.text-orange-600]="tab() === 'rules'"
-                        [class.border-transparent]="tab() !== 'rules'"
-                        [class.text-ink-500]="tab() !== 'rules'"
-                      >
-                        Règlements
-                      </button>
+
+                <td class="px-4 py-3">
+
+                  <div class="flex gap-3">
+
+                    <button
+                      (click)="toggleRole(u)"
+                      [disabled]="updatingUserId() === u.id"
+                      class="text-xs font-semibold text-orange-600 hover:underline disabled:opacity-50"
+                    >
+                      {{ u.role === 'admin' ? 'Rétrograder' : 'Promouvoir admin' }}
+                    </button>
+
+                    <button
+                      (click)="deleteUser(u)"
+                      [disabled]="deletingUserId() === u.id"
+                      class="text-xs font-semibold text-red-600 hover:underline disabled:opacity-50"
+                    >
+                      Supprimer
+                    </button>
+
+                  </div>
+
                 </td>
+
               </tr>
+
             }
+
           </tbody>
+
         </table>
+
       </div>
+
     }
+
   }
-</section>
-  <!-- ===== Onglet Règlements ===== -->
+
+
+  <!-- ====================================================== -->
+  <!-- ===================== REGLEMENTS ===================== -->
+  <!-- ====================================================== -->
+
   @if (tab() === 'rules') {
+
     <div class="flex justify-between items-center mb-6">
-      <h2 class="text-xl font-semibold text-ink-900">Règles et règlement</h2>
-      <button (click)="openCreateRule()"
-        class="bg-orange-500 text-white font-semibold px-5 py-2.5 rounded-full hover:bg-orange-600 transition-colors">
+
+      <h2 class="text-xl font-semibold text-ink-900">
+        Règles et règlement
+      </h2>
+
+      <button
+        (click)="openCreateRule()"
+        class="bg-orange-500 text-white font-semibold px-5 py-2.5 rounded-full hover:bg-orange-600 transition-colors"
+      >
         + Nouveau règlement
       </button>
+
     </div>
 
+
     @if (rulesLoading()) {
-      <p class="text-ink-500">Chargement...</p>
+
+      <p class="text-ink-500">
+        Chargement...
+      </p>
+
     } @else if (rulesError()) {
-      <p class="text-red-600">{{ rulesError() }}</p>
+
+      <p class="text-red-600">
+        {{ rulesError() }}
+      </p>
+
     } @else if (rules().length === 0) {
-      <p class="text-ink-500">Aucun règlement pour le moment.</p>
+
+      <div class="bg-white border border-orange-100 rounded-2xl p-8 text-center">
+
+        <p class="text-ink-500">
+          Aucun règlement pour le moment.
+        </p>
+
+        <button
+          (click)="openCreateRule()"
+          class="mt-4 bg-orange-500 text-white font-semibold px-5 py-2.5 rounded-full hover:bg-orange-600 transition-colors"
+        >
+          + Ajouter le premier règlement
+        </button>
+
+      </div>
+
     } @else {
+
       <div class="space-y-3">
-        @for (rule of rules(); track rule.id; let i = $index; let first = $first; let last = $last) {
+
+        @for (
+          rule of rules();
+          track rule.id;
+          let i = $index;
+          let first = $first;
+          let last = $last
+        ) {
+
           <div class="flex items-start gap-4 bg-white border border-orange-100 rounded-2xl p-4">
+
             <span class="font-display text-lg font-semibold text-orange-300 shrink-0 pt-0.5">
               {{ (i + 1) < 10 ? '0' + (i + 1) : (i + 1) }}
             </span>
+
             <div class="flex-1">
-              <p class="font-semibold text-ink-900">{{ rule.title }}</p>
-              <p class="text-sm text-ink-500 mt-1">{{ rule.content }}</p>
+
+              <p class="font-semibold text-ink-900">
+                {{ rule.title }}
+              </p>
+
+              <p class="text-sm text-ink-500 mt-1">
+                {{ rule.content }}
+              </p>
+
             </div>
+
             <div class="flex flex-col items-center gap-1 shrink-0">
-              <button (click)="moveRule(rule, 'up')" [disabled]="first || reorderingRules()"
-                class="text-ink-500 hover:text-orange-600 disabled:opacity-30 disabled:hover:text-ink-500 transition-colors" aria-label="Monter">
+
+              <button
+                (click)="moveRule(rule, 'up')"
+                [disabled]="first || reorderingRules()"
+                class="text-ink-500 hover:text-orange-600 disabled:opacity-30 disabled:hover:text-ink-500 transition-colors"
+                aria-label="Monter"
+              >
                 ▲
               </button>
-              <button (click)="moveRule(rule, 'down')" [disabled]="last || reorderingRules()"
-                class="text-ink-500 hover:text-orange-600 disabled:opacity-30 disabled:hover:text-ink-500 transition-colors" aria-label="Descendre">
+
+              <button
+                (click)="moveRule(rule, 'down')"
+                [disabled]="last || reorderingRules()"
+                class="text-ink-500 hover:text-orange-600 disabled:opacity-30 disabled:hover:text-ink-500 transition-colors"
+                aria-label="Descendre"
+              >
                 ▼
               </button>
+
             </div>
+
             <div class="flex gap-3 shrink-0 pt-0.5 text-sm font-semibold">
-              <button (click)="openEditRule(rule)" class="text-orange-600 hover:underline">Modifier</button>
-              <button (click)="deleteRule(rule)" [disabled]="deletingRuleId() === rule.id" class="text-red-600 hover:underline disabled:opacity-50">
-                Supprimer
+
+              <button
+                (click)="openEditRule(rule)"
+                class="text-orange-600 hover:underline"
+              >
+                Modifier
               </button>
+
+              <button
+                (click)="deleteRule(rule)"
+                [disabled]="deletingRuleId() === rule.id"
+                class="text-red-600 hover:underline disabled:opacity-50"
+              >
+                {{ deletingRuleId() === rule.id ? '...' : 'Supprimer' }}
+              </button>
+
             </div>
+
           </div>
+
         }
+
       </div>
+
     }
+
   }
 
-  @if (ruleModalOpen()) {
-    <div class="fixed inset-0 bg-ink-900/60 flex items-center justify-center p-4 z-50" (click)="closeRuleModal()">
-      <div class="bg-white rounded-[1.5rem_1.5rem_1.5rem_3rem] max-w-lg w-full p-6" (click)="$event.stopPropagation()">
-        <h2 class="font-display text-2xl font-semibold text-ink-900 mb-6">
-          {{ editingRule() ? 'Modifier le règlement' : 'Nouveau règlement' }}
-        </h2>
+</section>
 
-        <form [formGroup]="ruleForm" (ngSubmit)="submitRule()" class="space-y-4">
-          <div>
-            <label for="rule_title" class="block text-sm mb-1.5 text-ink-700">Titre</label>
-            <input id="rule_title" formControlName="title" type="text"
-              class="w-full rounded-lg border border-ink-300 px-3 py-2 focus:border-orange-500 outline-none" />
-          </div>
 
-          <div>
-            <label for="rule_content" class="block text-sm mb-1.5 text-ink-700">Contenu</label>
-            <textarea id="rule_content" formControlName="content" rows="4"
-              class="w-full rounded-lg border border-ink-300 px-3 py-2 focus:border-orange-500 outline-none"></textarea>
-          </div>
+<!-- ====================================================== -->
+<!-- ================= MODAL REGLEMENT ==================== -->
+<!-- ====================================================== -->
 
-          @if (ruleFormError()) {
-            <p class="text-red-600 text-sm">{{ ruleFormError() }}</p>
-          }
+@if (ruleModalOpen()) {
 
-          <div class="flex gap-3 pt-2">
-            <button type="submit" [disabled]="ruleSubmitting()"
-              class="flex-1 bg-orange-500 text-white font-semibold py-2.5 rounded-full hover:bg-orange-600 transition-colors disabled:opacity-60">
-              {{ ruleSubmitting() ? 'Enregistrement...' : 'Enregistrer' }}
-            </button>
-            <button type="button" (click)="closeRuleModal()" class="border border-ink-300 px-5 rounded-full hover:bg-orange-50 transition-colors">
-              Annuler
-            </button>
-          </div>
-        </form>
-      </div>
+  <div
+    class="fixed inset-0 bg-ink-900/60 flex items-center justify-center p-4 z-50"
+    (click)="closeRuleModal()"
+  >
+
+    <div
+      class="bg-white rounded-[1.5rem_1.5rem_1.5rem_3rem] max-w-lg w-full p-6"
+      (click)="$event.stopPropagation()"
+    >
+
+      <h2 class="font-display text-2xl font-semibold text-ink-900 mb-6">
+        {{ editingRule() ? 'Modifier le règlement' : 'Nouveau règlement' }}
+      </h2>
+
+      <form
+        [formGroup]="ruleForm"
+        (ngSubmit)="submitRule()"
+        class="space-y-4"
+      >
+
+        <div>
+
+          <label
+            for="rule_title"
+            class="block text-sm mb-1.5 text-ink-700"
+          >
+            Titre
+          </label>
+
+          <input
+            id="rule_title"
+            formControlName="title"
+            type="text"
+            class="w-full rounded-lg border border-ink-300 px-3 py-2 focus:border-orange-500 outline-none"
+          />
+
+        </div>
+
+        <div>
+
+          <label
+            for="rule_content"
+            class="block text-sm mb-1.5 text-ink-700"
+          >
+            Contenu
+          </label>
+
+          <textarea
+            id="rule_content"
+            formControlName="content"
+            rows="4"
+            class="w-full rounded-lg border border-ink-300 px-3 py-2 focus:border-orange-500 outline-none"
+          ></textarea>
+
+        </div>
+
+        @if (ruleFormError()) {
+
+          <p class="text-red-600 text-sm">
+            {{ ruleFormError() }}
+          </p>
+
+        }
+
+        <div class="flex gap-3 pt-2">
+
+          <button
+            type="submit"
+            [disabled]="ruleSubmitting()"
+            class="flex-1 bg-orange-500 text-white font-semibold py-2.5 rounded-full hover:bg-orange-600 transition-colors disabled:opacity-60"
+          >
+            {{ ruleSubmitting() ? 'Enregistrement...' : 'Enregistrer' }}
+          </button>
+
+          <button
+            type="button"
+            (click)="closeRuleModal()"
+            class="border border-ink-300 px-5 rounded-full hover:bg-orange-50 transition-colors"
+          >
+            Annuler
+          </button>
+
+        </div>
+
+      </form>
+
     </div>
-  }
 
-<!-- ===== Modal Galerie (création / édition) ===== -->
+  </div>
+
+}
+
+
+<!-- ====================================================== -->
+<!-- ==================== MODAL GALERIE =================== -->
+<!-- ====================================================== -->
+
 @if (galleryModalOpen()) {
-  <div class="fixed inset-0 bg-ink-900/60 flex items-center justify-center p-4 z-50" (click)="closeGalleryModal()">
-    <div class="bg-white rounded-2xl max-w-lg w-full p-6 max-h-[90vh] overflow-y-auto" (click)="$event.stopPropagation()">
+
+  <div
+    class="fixed inset-0 bg-ink-900/60 flex items-center justify-center p-4 z-50"
+    (click)="closeGalleryModal()"
+  >
+
+    <div
+      class="bg-white rounded-2xl max-w-lg w-full p-6 max-h-[90vh] overflow-y-auto"
+      (click)="$event.stopPropagation()"
+    >
+
       <p class="text-xs text-orange-600 font-semibold uppercase tracking-widest">
         {{ editingGalleryItem() ? "Modifier l'image" : 'Nouvelle image' }}
       </p>
+
       <h2 class="text-2xl font-extrabold text-ink-900 mt-2 mb-6">
         {{ editingGalleryItem() ? editingGalleryItem()!.title : 'Ajouter à la galerie' }}
       </h2>
 
-      <form [formGroup]="galleryForm" (ngSubmit)="submitGalleryItem()" class="space-y-4">
+      <form
+        [formGroup]="galleryForm"
+        (ngSubmit)="submitGalleryItem()"
+        class="space-y-4"
+      >
+
         <div>
-          <label for="title" class="block text-sm mb-1.5 text-ink-700">Titre</label>
-          <input id="title" formControlName="title" type="text"
-            class="w-full rounded-lg border border-ink-300 px-3 py-2 focus:border-orange-500 outline-none" />
+
+          <label
+            for="title"
+            class="block text-sm mb-1.5 text-ink-700"
+          >
+            Titre
+          </label>
+
+          <input
+            id="title"
+            formControlName="title"
+            type="text"
+            class="w-full rounded-lg border border-ink-300 px-3 py-2 focus:border-orange-500 outline-none"
+          />
+
         </div>
 
         <div>
-          <label for="category" class="block text-sm mb-1.5 text-ink-700">Catégorie</label>
-          <select id="category" formControlName="category"
-            class="w-full rounded-lg border border-ink-300 px-3 py-2 focus:border-orange-500 outline-none bg-white">
-            <option value="" disabled>Choisir une catégorie</option>
+
+          <label
+            for="category"
+            class="block text-sm mb-1.5 text-ink-700"
+          >
+            Catégorie
+          </label>
+
+          <select
+            id="category"
+            formControlName="category"
+            class="w-full rounded-lg border border-ink-300 px-3 py-2 focus:border-orange-500 outline-none bg-white"
+          >
+
+            <option value="" disabled>
+              Choisir une catégorie
+            </option>
+
             @for (cat of galleryCategories; track cat) {
-              <option [value]="cat">{{ cat }}</option>
+
+              <option [value]="cat">
+                {{ cat }}
+              </option>
+
             }
+
           </select>
+
         </div>
 
         <div>
-          <label for="image" class="block text-sm mb-1.5 text-ink-700">Image</label>
+
+          <label
+            for="image"
+            class="block text-sm mb-1.5 text-ink-700"
+          >
+            Image
+          </label>
 
           @if (imagePreview()) {
+
             <div class="relative w-full h-40 rounded-lg overflow-hidden mb-2 border border-ink-300">
-              <img [src]="imagePreview()" alt="Aperçu" class="w-full h-full object-cover" />
+
+              <img
+                [src]="imagePreview()"
+                alt="Aperçu"
+                class="w-full h-full object-cover"
+              />
+
             </div>
+
           }
 
           <input
@@ -436,128 +945,336 @@
             (change)="onImageSelected($event)"
             class="w-full text-sm text-ink-700 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:bg-orange-50 file:text-orange-600 file:font-semibold hover:file:bg-orange-100"
           />
-          <p class="text-xs text-ink-500 mt-1">JPG, PNG... 10 Mo maximum.</p>
+
+          <p class="text-xs text-ink-500 mt-1">
+            JPG, PNG... 10 Mo maximum.
+          </p>
+
         </div>
 
         <div>
-          <label for="gallery-description" class="block text-sm mb-1.5 text-ink-700">Description (optionnel)</label>
-          <textarea id="gallery-description" formControlName="description" rows="3"
-            class="w-full rounded-lg border border-ink-300 px-3 py-2 focus:border-orange-500 outline-none"></textarea>
+
+          <label
+            for="gallery-description"
+            class="block text-sm mb-1.5 text-ink-700"
+          >
+            Description (optionnel)
+          </label>
+
+          <textarea
+            id="gallery-description"
+            formControlName="description"
+            rows="3"
+            class="w-full rounded-lg border border-ink-300 px-3 py-2 focus:border-orange-500 outline-none"
+          ></textarea>
+
         </div>
 
         <label class="flex items-center gap-2 text-sm text-ink-700">
-          <input formControlName="is_published" type="checkbox" class="accent-orange-500" />
+
+          <input
+            formControlName="is_published"
+            type="checkbox"
+            class="accent-orange-500"
+          />
+
           Publier immédiatement (visible par les utilisateurs)
+
         </label>
 
         @if (galleryFormError()) {
-          <p class="text-red-600 text-sm">{{ galleryFormError() }}</p>
+
+          <p class="text-red-600 text-sm">
+            {{ galleryFormError() }}
+          </p>
+
         }
 
         <div class="flex gap-3 pt-2">
-          <button type="submit" [disabled]="gallerySubmitting()"
-            class="flex-1 bg-orange-500 text-white font-semibold py-2.5 rounded-lg hover:bg-orange-600 transition-colors disabled:opacity-60">
-            {{ gallerySubmitting() ? 'Enregistrement...' : (editingGalleryItem() ? 'Enregistrer' : "Ajouter l'image") }}
+
+          <button
+            type="submit"
+            [disabled]="gallerySubmitting()"
+            class="flex-1 bg-orange-500 text-white font-semibold py-2.5 rounded-lg hover:bg-orange-600 transition-colors disabled:opacity-60"
+          >
+            {{
+              gallerySubmitting()
+                ? 'Enregistrement...'
+                : (editingGalleryItem() ? 'Enregistrer' : "Ajouter l'image")
+            }}
           </button>
-          <button type="button" (click)="closeGalleryModal()" class="border border-ink-300 px-5 rounded-lg hover:bg-orange-50 transition-colors">
+
+          <button
+            type="button"
+            (click)="closeGalleryModal()"
+            class="border border-ink-300 px-5 rounded-lg hover:bg-orange-50 transition-colors"
+          >
             Annuler
           </button>
+
         </div>
+
       </form>
+
     </div>
+
   </div>
+
 }
 
-<!-- ===== Modal Utilisateur (création) ===== -->
+
+<!-- ====================================================== -->
+<!-- ================== MODAL UTILISATEUR ================= -->
+<!-- ====================================================== -->
+
 @if (userModalOpen()) {
-  <div class="fixed inset-0 bg-ink-900/60 flex items-center justify-center p-4 z-50" (click)="closeUserModal()">
-    <div class="bg-white rounded-2xl max-w-lg w-full p-6 max-h-[90vh] overflow-y-auto" (click)="$event.stopPropagation()">
-      <p class="text-xs text-orange-600 font-semibold uppercase tracking-widest">Nouvel utilisateur</p>
-      <h2 class="text-2xl font-extrabold text-ink-900 mt-2 mb-6">Créer un compte</h2>
 
-      <form [formGroup]="userForm" (ngSubmit)="submitUser()" class="space-y-4">
+  <div
+    class="fixed inset-0 bg-ink-900/60 flex items-center justify-center p-4 z-50"
+    (click)="closeUserModal()"
+  >
+
+    <div
+      class="bg-white rounded-2xl max-w-lg w-full p-6 max-h-[90vh] overflow-y-auto"
+      (click)="$event.stopPropagation()"
+    >
+
+      <p class="text-xs text-orange-600 font-semibold uppercase tracking-widest">
+        Nouvel utilisateur
+      </p>
+
+      <h2 class="text-2xl font-extrabold text-ink-900 mt-2 mb-6">
+        Créer un compte
+      </h2>
+
+      <form
+        [formGroup]="userForm"
+        (ngSubmit)="submitUser()"
+        class="space-y-4"
+      >
+
         <div>
-          <label for="u-name" class="block text-sm mb-1.5 text-ink-700">Nom</label>
-          <input id="u-name" formControlName="name" type="text"
-            class="w-full rounded-lg border border-ink-300 px-3 py-2 focus:border-orange-500 outline-none" />
+
+          <label
+            for="u-name"
+            class="block text-sm mb-1.5 text-ink-700"
+          >
+            Nom
+          </label>
+
+          <input
+            id="u-name"
+            formControlName="name"
+            type="text"
+            class="w-full rounded-lg border border-ink-300 px-3 py-2 focus:border-orange-500 outline-none"
+          />
+
         </div>
 
         <div>
-          <label for="u-email" class="block text-sm mb-1.5 text-ink-700">Email</label>
-          <input id="u-email" formControlName="email" type="email"
-            class="w-full rounded-lg border border-ink-300 px-3 py-2 focus:border-orange-500 outline-none" />
+
+          <label
+            for="u-email"
+            class="block text-sm mb-1.5 text-ink-700"
+          >
+            Email
+          </label>
+
+          <input
+            id="u-email"
+            formControlName="email"
+            type="email"
+            class="w-full rounded-lg border border-ink-300 px-3 py-2 focus:border-orange-500 outline-none"
+          />
+
         </div>
 
         <div>
-          <label for="u-password" class="block text-sm mb-1.5 text-ink-700">Mot de passe</label>
-          <input id="u-password" formControlName="password" type="password"
-            class="w-full rounded-lg border border-ink-300 px-3 py-2 focus:border-orange-500 outline-none" />
+
+          <label
+            for="u-password"
+            class="block text-sm mb-1.5 text-ink-700"
+          >
+            Mot de passe
+          </label>
+
+          <input
+            id="u-password"
+            formControlName="password"
+            type="password"
+            class="w-full rounded-lg border border-ink-300 px-3 py-2 focus:border-orange-500 outline-none"
+          />
+
         </div>
 
         <div>
-          <label for="u-phone" class="block text-sm mb-1.5 text-ink-700">Téléphone (optionnel)</label>
-          <input id="u-phone" formControlName="phone" type="text"
-            class="w-full rounded-lg border border-ink-300 px-3 py-2 focus:border-orange-500 outline-none" />
+
+          <label
+            for="u-phone"
+            class="block text-sm mb-1.5 text-ink-700"
+          >
+            Téléphone (optionnel)
+          </label>
+
+          <input
+            id="u-phone"
+            formControlName="phone"
+            type="text"
+            class="w-full rounded-lg border border-ink-300 px-3 py-2 focus:border-orange-500 outline-none"
+          />
+
         </div>
 
         <div>
-          <label for="u-role" class="block text-sm mb-1.5 text-ink-700">Rôle</label>
-          <select id="u-role" formControlName="role"
-            class="w-full rounded-lg border border-ink-300 px-3 py-2 focus:border-orange-500 outline-none bg-white">
-            <option value="client">Client</option>
-            <option value="admin">Administrateur</option>
+
+          <label
+            for="u-role"
+            class="block text-sm mb-1.5 text-ink-700"
+          >
+            Rôle
+          </label>
+
+          <select
+            id="u-role"
+            formControlName="role"
+            class="w-full rounded-lg border border-ink-300 px-3 py-2 focus:border-orange-500 outline-none bg-white"
+          >
+
+            <option value="client">
+              Client
+            </option>
+
+            <option value="admin">
+              Administrateur
+            </option>
+
           </select>
+
         </div>
 
         @if (userFormError()) {
-          <p class="text-red-600 text-sm">{{ userFormError() }}</p>
+
+          <p class="text-red-600 text-sm">
+            {{ userFormError() }}
+          </p>
+
         }
 
         <div class="flex gap-3 pt-2">
-          <button type="button" (click)="closeUserModal()"
-            class="flex-1 border border-ink-300 text-ink-700 font-semibold text-sm py-2.5 rounded-lg hover:bg-ink-50">
+
+          <button
+            type="button"
+            (click)="closeUserModal()"
+            class="flex-1 border border-ink-300 text-ink-700 font-semibold text-sm py-2.5 rounded-lg hover:bg-ink-50"
+          >
             Annuler
           </button>
-          <button type="submit" [disabled]="userSubmitting()"
-            class="flex-1 bg-orange-500 text-white font-semibold text-sm py-2.5 rounded-lg hover:bg-orange-600 disabled:opacity-50">
+
+          <button
+            type="submit"
+            [disabled]="userSubmitting()"
+            class="flex-1 bg-orange-500 text-white font-semibold text-sm py-2.5 rounded-lg hover:bg-orange-600 disabled:opacity-50"
+          >
             {{ userSubmitting() ? 'Création...' : 'Créer' }}
           </button>
+
         </div>
+
       </form>
+
     </div>
+
   </div>
+
 }
 
-<!-- ===== Modal Chambre (création / édition) ===== -->
+
+<!-- ====================================================== -->
+<!-- ==================== MODAL CHAMBRE =================== -->
+<!-- ====================================================== -->
+
 @if (roomModalOpen()) {
-  <div class="fixed inset-0 bg-ink-900/60 flex items-center justify-center p-4 z-50" (click)="closeRoomModal()">
-    <div class="bg-white rounded-2xl max-w-lg w-full p-6 max-h-[90vh] overflow-y-auto" (click)="$event.stopPropagation()">
+
+  <div
+    class="fixed inset-0 bg-ink-900/60 flex items-center justify-center p-4 z-50"
+    (click)="closeRoomModal()"
+  >
+
+    <div
+      class="bg-white rounded-2xl max-w-lg w-full p-6 max-h-[90vh] overflow-y-auto"
+      (click)="$event.stopPropagation()"
+    >
+
       <p class="text-xs text-orange-600 font-semibold uppercase tracking-widest">
         {{ editingRoom() ? 'Modifier la chambre' : 'Nouvelle chambre' }}
       </p>
+
       <h2 class="text-2xl font-extrabold text-ink-900 mt-2 mb-6">
         {{ editingRoom() ? editingRoom()!.room_type : 'Ajouter une chambre' }}
       </h2>
 
-      <form [formGroup]="roomForm" (ngSubmit)="submitRoom()" class="space-y-4">
+      <form
+        [formGroup]="roomForm"
+        (ngSubmit)="submitRoom()"
+        class="space-y-4"
+      >
+
         <div>
-          <label for="room_type" class="block text-sm mb-1.5 text-ink-700">Type de chambre</label>
-          <input id="room_type" formControlName="room_type" type="text"
-            class="w-full rounded-lg border border-ink-300 px-3 py-2 focus:border-orange-500 outline-none" />
+
+          <label
+            for="room_type"
+            class="block text-sm mb-1.5 text-ink-700"
+          >
+            Type de chambre
+          </label>
+
+          <input
+            id="room_type"
+            formControlName="room_type"
+            type="text"
+            class="w-full rounded-lg border border-ink-300 px-3 py-2 focus:border-orange-500 outline-none"
+          />
+
         </div>
 
         <div>
-          <label for="price" class="block text-sm mb-1.5 text-ink-700">Prix par nuit (FCFA)</label>
-          <input id="price" formControlName="price" type="number" min="0"
-            class="w-full rounded-lg border border-ink-300 px-3 py-2 focus:border-orange-500 outline-none" />
+
+          <label
+            for="price"
+            class="block text-sm mb-1.5 text-ink-700"
+          >
+            Prix par nuit (FCFA)
+          </label>
+
+          <input
+            id="price"
+            formControlName="price"
+            type="number"
+            min="0"
+            class="w-full rounded-lg border border-ink-300 px-3 py-2 focus:border-orange-500 outline-none"
+          />
+
         </div>
 
         <div>
-          <label for="photo" class="block text-sm mb-1.5 text-ink-700">Photo (optionnel)</label>
+
+          <label
+            for="photo"
+            class="block text-sm mb-1.5 text-ink-700"
+          >
+            Photo (optionnel)
+          </label>
 
           @if (photoPreview()) {
+
             <div class="relative w-full h-40 rounded-lg overflow-hidden mb-2 border border-ink-300">
-              <img [src]="photoPreview()" alt="Aperçu" class="w-full h-full object-cover" />
+
+              <img
+                [src]="photoPreview()"
+                alt="Aperçu"
+                class="w-full h-full object-cover"
+              />
+
               <button
                 type="button"
                 (click)="clearPhoto()"
@@ -565,7 +1282,9 @@
               >
                 Retirer
               </button>
+
             </div>
+
           }
 
           <input
@@ -575,34 +1294,79 @@
             (change)="onPhotoSelected($event)"
             class="w-full text-sm text-ink-700 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:bg-orange-50 file:text-orange-600 file:font-semibold hover:file:bg-orange-100"
           />
-          <p class="text-xs text-ink-500 mt-1">JPG, PNG... 10 Mo maximum.</p>
+
+          <p class="text-xs text-ink-500 mt-1">
+            JPG, PNG... 10 Mo maximum.
+          </p>
+
         </div>
 
         <div>
-          <label for="description" class="block text-sm mb-1.5 text-ink-700">Description (optionnel)</label>
-          <textarea id="description" formControlName="description" rows="3"
-            class="w-full rounded-lg border border-ink-300 px-3 py-2 focus:border-orange-500 outline-none"></textarea>
+
+          <label
+            for="description"
+            class="block text-sm mb-1.5 text-ink-700"
+          >
+            Description (optionnel)
+          </label>
+
+          <textarea
+            id="description"
+            formControlName="description"
+            rows="3"
+            class="w-full rounded-lg border border-ink-300 px-3 py-2 focus:border-orange-500 outline-none"
+          ></textarea>
+
         </div>
 
         <label class="flex items-center gap-2 text-sm text-ink-700">
-          <input formControlName="is_available" type="checkbox" class="accent-orange-500" />
+
+          <input
+            formControlName="is_available"
+            type="checkbox"
+            class="accent-orange-500"
+          />
+
           Disponible à la réservation
+
         </label>
 
         @if (roomFormError()) {
-          <p class="text-red-600 text-sm">{{ roomFormError() }}</p>
+
+          <p class="text-red-600 text-sm">
+            {{ roomFormError() }}
+          </p>
+
         }
 
         <div class="flex gap-3 pt-2">
-          <button type="submit" [disabled]="roomSubmitting()"
-            class="flex-1 bg-orange-500 text-white font-semibold py-2.5 rounded-lg hover:bg-orange-600 transition-colors disabled:opacity-60">
-            {{ roomSubmitting() ? 'Enregistrement...' : (editingRoom() ? 'Enregistrer' : 'Créer la chambre') }}
+
+          <button
+            type="submit"
+            [disabled]="roomSubmitting()"
+            class="flex-1 bg-orange-500 text-white font-semibold py-2.5 rounded-lg hover:bg-orange-600 transition-colors disabled:opacity-60"
+          >
+            {{
+              roomSubmitting()
+                ? 'Enregistrement...'
+                : (editingRoom() ? 'Enregistrer' : 'Créer la chambre')
+            }}
           </button>
-          <button type="button" (click)="closeRoomModal()" class="border border-ink-300 px-5 rounded-lg hover:bg-orange-50 transition-colors">
+
+          <button
+            type="button"
+            (click)="closeRoomModal()"
+            class="border border-ink-300 px-5 rounded-lg hover:bg-orange-50 transition-colors"
+          >
             Annuler
           </button>
+
         </div>
+
       </form>
+
     </div>
+
   </div>
+
 }
