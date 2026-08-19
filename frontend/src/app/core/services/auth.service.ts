@@ -5,6 +5,8 @@ import { environment } from '../../../environments/environment';
 import {
   AuthResponse,
   LoginPayload,
+  PasswordPayload,
+  ProfilePayload,
   RegisterPayload,
   User,
 } from '../models/user.model';
@@ -51,6 +53,24 @@ export class AuthService {
     return this.http
       .get<User>(`${environment.apiUrl}/me`)
       .pipe(tap((user) => this.persistUser(user)));
+  }
+    updateProfile(payload: ProfilePayload): Observable<User> {
+    const formData = new FormData();
+    if (payload.name !== undefined) formData.append('name', payload.name);
+    if (payload.email !== undefined) formData.append('email', payload.email);
+    if (payload.phone !== undefined && payload.phone !== null) formData.append('phone', payload.phone);
+    if (payload.address !== undefined && payload.address !== null) formData.append('address', payload.address);
+    if (payload.avatar) formData.append('avatar', payload.avatar);
+    if (payload.remove_avatar) formData.append('remove_avatar', '1');
+    formData.append('_method', 'PUT');
+
+    return this.http
+      .post<User>(`${environment.apiUrl}/me`, formData)
+      .pipe(tap((user) => this.persistUser(user)));
+  }
+
+  updatePassword(payload: PasswordPayload): Observable<{ message: string }> {
+    return this.http.put<{ message: string }>(`${environment.apiUrl}/me/password`, payload);
   }
 
   getToken(): string | null {

@@ -4,29 +4,27 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\GalleryController;
 use App\Http\Controllers\Api\ReservationController;
 use App\Http\Controllers\Api\RoomController;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\RuleController;
+use App\Http\Controllers\Api\UserController;
+use Illuminate\Support\Facades\Route;
 
 // Auth
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
-
-//rules
-Route::get('/rules', [RuleController::class, 'index']);
-Route::post('/rules', [RuleController::class, 'store']);
-Route::put('/rules/{rule}', [RuleController::class, 'update']);
-Route::delete('/rules/{rule}', [RuleController::class, 'destroy']);
-Route::post('/rules/reorder', [RuleController::class, 'reorder']);
+Route::put('/me', [AuthController::class, 'updateProfile']);
+Route::post('/me', [AuthController::class, 'updateProfile']); // upload avatar (_method=PUT)
+Route::put('/me/password', [AuthController::class, 'updatePassword']);
 
 // Chambres : lecture publique (catalogue), écriture réservée à l'admin (dans le contrôleur)
 Route::get('/rooms', [RoomController::class, 'index']);
 Route::get('/rooms/{room}', [RoomController::class, 'show']);
 
-
 // Galerie : lecture publique (images publiées uniquement), gestion réservée à l'admin
 Route::get('/gallery', [GalleryController::class, 'index']);
 Route::get('/gallery/{gallery}', [GalleryController::class, 'show']);
+
+// Règlement : lecture publique, gestion réservée à l'admin
+Route::get('/rules', [RuleController::class, 'index']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
@@ -50,6 +48,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/users', [UserController::class, 'store']);
     Route::put('/users/{user}', [UserController::class, 'update']);
     Route::delete('/users/{user}', [UserController::class, 'destroy']);
+
+    Route::post('/rules', [RuleController::class, 'store']);
+    Route::put('/rules/{rule}', [RuleController::class, 'update']);
+    Route::delete('/rules/{rule}', [RuleController::class, 'destroy']);
+    Route::post('/rules/reorder', [RuleController::class, 'reorder']);
 
     Route::get('/reservations', [ReservationController::class, 'index']);
     Route::post('/reservations', [ReservationController::class, 'store']);

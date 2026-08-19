@@ -5,6 +5,8 @@ export interface User {
   name: string;
   email: string;
   phone: string | null;
+  address: string | null;
+  avatar: string | null;
   role: UserRole;
   created_at?: string;
   updated_at?: string;
@@ -26,4 +28,19 @@ export interface RegisterPayload {
 export interface LoginPayload {
   email: string;
   password: string;
+}
+
+export interface ProfilePayload {
+  name?: string;
+  email?: string;
+  phone?: string | null;
+  address?: string | null;
+  avatar?: File | null;
+  remove_avatar?: boolean;
+}
+
+export interface PasswordPayload {
+  current_password: string;
+  password: string;
+  password_confirmation: string;
 }
