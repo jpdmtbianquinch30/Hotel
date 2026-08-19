@@ -18,7 +18,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
 
     Route::post('/rooms', [RoomController::class, 'store']);
+    // PUT classique + POST avec _method=PUT (utilisé par le frontend pour l'upload de fichier,
+    // Laravel ne lit pas $_FILES sur une vraie requête PUT multipart).
     Route::put('/rooms/{room}', [RoomController::class, 'update']);
+    Route::post('/rooms/{room}', [RoomController::class, 'update']);
     Route::delete('/rooms/{room}', [RoomController::class, 'destroy']);
 
     Route::get('/reservations', [ReservationController::class, 'index']);

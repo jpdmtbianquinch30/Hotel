@@ -1,8 +1,237 @@
-import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, inject, signal } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Room, RoomPayload } from '../../../core/models/room.model';
+import {
+  Reservation,
+  RESERVATION_STATUS_LABELS,
+  ReservationStatus,
+} from '../../../core/models/reservation.model';
+import { RoomService } from '../../../core/services/room.service';
+import { ReservationService } from '../../../core/services/reservation.service';
+
+type Tab = 'rooms' | 'reservations';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './dashboard.html',
 })
-export class Dashboard {}
+export class Dashboard {
+  private readonly roomService = inject(RoomService);
+  private readonly reservationService = inject(ReservationService);
+  private readonly fb = inject(FormBuilder);
+
+  readonly tab = signal<Tab>('rooms');
+  readonly statusLabels = RESERVATION_STATUS_LABELS;
+  readonly statusOptions: ReservationStatus[] = [
+    'pending',
+    'confirmed',
+    'checked_in',
+    'checked_out',
+    'cancelled',
+  ];
+
+  // --- Chambres ---
+  readonly rooms = signal<Room[]>([]);
+  readonly roomsLoading = signal(true);
+  readonly roomsError = signal<string | null>(null);
+
+  readonly roomModalOpen = signal(false);
+  readonly editingRoom = signal<Room | null>(null);
+  readonly roomSubmitting = signal(false);
+  readonly roomFormError = signal<string | null>(null);
+  readonly deletingRoomId = signal<number | null>(null);
+
+  readonly selectedPhoto = signal<File | null>(null);
+  readonly photoPreview = signal<string | null>(null);
+  readonly removeExistingPhoto = signal(false);
+
+  readonly roomForm = this.fb.nonNullable.group({
+    room_type: ['', Validators.required],
+    price: [0, [Validators.required, Validators.min(0)]],
+    description: [''],
+    is_available: [true],
+  });
+
+  // --- Réservations ---
+  readonly reservations = signal<Reservation[]>([]);
+  readonly reservationsLoading = signal(true);
+  readonly reservationsError = signal<string | null>(null);
+  readonly updatingStatusId = signal<number | null>(null);
+
+  constructor() {
+    this.fetchRooms();
+    this.fetchReservations();
+  }
+
+  setTab(tab: Tab): void {
+    this.tab.set(tab);
+  }
+
+  // --- Chambres : CRUD ---
+
+  fetchRooms(): void {
+    this.roomsLoading.set(true);
+    this.roomService.list().subscribe({
+      next: (rooms) => {
+        this.rooms.set(rooms);
+        this.roomsLoading.set(false);
+      },
+      error: () => {
+        this.roomsError.set('Impossible de charger les chambres.');
+        this.roomsLoading.set(false);
+      },
+    });
+  }
+
+  openCreateRoom(): void {
+    this.editingRoom.set(null);
+    this.roomFormError.set(null);
+    this.selectedPhoto.set(null);
+    this.photoPreview.set(null);
+    this.removeExistingPhoto.set(false);
+    this.roomForm.reset({
+      room_type: '',
+      price: 0,
+      description: '',
+      is_available: true,
+    });
+    this.roomModalOpen.set(true);
+  }
+
+  openEditRoom(room: Room): void {
+    this.editingRoom.set(room);
+    this.roomFormError.set(null);
+    this.selectedPhoto.set(null);
+    this.photoPreview.set(room.photo);
+    this.removeExistingPhoto.set(false);
+    this.roomForm.reset({
+      room_type: room.room_type,
+      price: Number(room.price),
+      description: room.description ?? '',
+      is_available: room.is_available,
+    });
+    this.roomModalOpen.set(true);
+  }
+
+  closeRoomModal(): void {
+    this.roomModalOpen.set(false);
+  }
+
+  onPhotoSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0] ?? null;
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      this.roomFormError.set('Le fichier sélectionné doit être une image.');
+      return;
+    }
+
+    this.roomFormError.set(null);
+    this.removeExistingPhoto.set(false);
+    this.selectedPhoto.set(file);
+
+    const reader = new FileReader();
+    reader.onload = () => this.photoPreview.set(reader.result as string);
+    reader.readAsDataURL(file);
+  }
+
+  clearPhoto(): void {
+    this.selectedPhoto.set(null);
+    this.photoPreview.set(null);
+    this.removeExistingPhoto.set(!!this.editingRoom()?.photo);
+  }
+
+  submitRoom(): void {
+    if (this.roomForm.invalid) {
+      this.roomForm.markAllAsTouched();
+      return;
+    }
+
+    const raw = this.roomForm.getRawValue();
+    const payload: RoomPayload = {
+      room_type: raw.room_type,
+      price: raw.price,
+      description: raw.description || null,
+      is_available: raw.is_available,
+      photo: this.selectedPhoto(),
+      remove_photo: this.removeExistingPhoto(),
+    };
+
+    this.roomSubmitting.set(true);
+    this.roomFormError.set(null);
+
+    const editing = this.editingRoom();
+    const request = editing
+      ? this.roomService.update(editing.id, payload)
+      : this.roomService.create(payload);
+
+    request.subscribe({
+      next: () => {
+        this.roomSubmitting.set(false);
+        this.roomModalOpen.set(false);
+        this.fetchRooms();
+      },
+      error: (err) => {
+        this.roomSubmitting.set(false);
+        this.roomFormError.set(
+          err?.error?.message ?? "L'enregistrement de la chambre a échoué."
+        );
+      },
+    });
+  }
+
+  deleteRoom(room: Room): void {
+    if (!confirm(`Supprimer la chambre "${room.room_type}" ?`)) return;
+
+    this.deletingRoomId.set(room.id);
+    this.roomService.delete(room.id).subscribe({
+      next: () => {
+        this.deletingRoomId.set(null);
+        this.fetchRooms();
+      },
+      error: () => {
+        this.deletingRoomId.set(null);
+        this.roomsError.set('Impossible de supprimer cette chambre.');
+      },
+    });
+  }
+
+  // --- Réservations : gestion ---
+
+  fetchReservations(): void {
+    this.reservationsLoading.set(true);
+    this.reservationService.list().subscribe({
+      next: (list) => {
+        this.reservations.set(list);
+        this.reservationsLoading.set(false);
+      },
+      error: () => {
+        this.reservationsError.set('Impossible de charger les réservations.');
+        this.reservationsLoading.set(false);
+      },
+    });
+  }
+
+  changeStatus(reservation: Reservation, status: string): void {
+    const newStatus = status as ReservationStatus;
+    if (newStatus === reservation.status) return;
+
+    this.updatingStatusId.set(reservation.id);
+    this.reservationService.updateStatus(reservation.id, newStatus).subscribe({
+      next: (updated) => {
+        this.updatingStatusId.set(null);
+        this.reservations.update((list) =>
+          list.map((r) => (r.id === updated.id ? { ...r, status: updated.status } : r))
+        );
+      },
+      error: () => {
+        this.updatingStatusId.set(null);
+        this.reservationsError.set('Impossible de mettre à jour le statut.');
+      },
+    });
+  }
+}

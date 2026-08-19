@@ -19,11 +19,28 @@ export class RoomService {
   }
 
   create(payload: RoomPayload): Observable<Room> {
-    return this.http.post<Room>(this.base, payload);
+    return this.http.post<Room>(this.base, this.toFormData(payload));
   }
 
   update(id: number, payload: Partial<RoomPayload>): Observable<Room> {
-    return this.http.put<Room>(`${this.base}/${id}`, payload);
+    // Laravel ne lit pas les fichiers sur une vraie requête PUT multipart :
+    // on envoie en POST avec un champ _method=PUT (method spoofing).
+    const formData = this.toFormData(payload);
+    formData.append('_method', 'PUT');
+    return this.http.post<Room>(`${this.base}/${id}`, formData);
+  }
+
+  private toFormData(payload: Partial<RoomPayload>): FormData {
+    const formData = new FormData();
+    if (payload.room_type !== undefined) formData.append('room_type', payload.room_type);
+    if (payload.price !== undefined) formData.append('price', String(payload.price));
+    if (payload.description) formData.append('description', payload.description);
+    if (payload.is_available !== undefined) {
+      formData.append('is_available', payload.is_available ? '1' : '0');
+    }
+    if (payload.photo) formData.append('photo', payload.photo);
+    if (payload.remove_photo) formData.append('remove_photo', '1');
+    return formData;
   }
 
   delete(id: number): Observable<{ message: string }> {

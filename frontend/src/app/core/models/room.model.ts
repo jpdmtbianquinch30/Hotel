@@ -12,7 +12,8 @@ export interface Room {
 export interface RoomPayload {
   room_type: string;
   price: number;
-  photo?: string | null;
+  photo?: File | null;
+  remove_photo?: boolean;
   description?: string | null;
   is_available?: boolean;
 }
