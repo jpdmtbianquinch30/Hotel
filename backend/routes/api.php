@@ -7,11 +7,6 @@ use App\Http\Controllers\Api\RoomController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\UserController;
 
-    Route::get('/users', [UserController::class, 'index']);
-    Route::post('/users', [UserController::class, 'store']);
-    Route::put('/users/{user}', [UserController::class, 'update']);
-    Route::delete('/users/{user}', [UserController::class, 'destroy']);
-    
 // Auth
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -41,6 +36,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/gallery/{gallery}', [GalleryController::class, 'update']);
     Route::post('/gallery/{gallery}', [GalleryController::class, 'update']);
     Route::delete('/gallery/{gallery}', [GalleryController::class, 'destroy']);
+
+    Route::get('/users', [UserController::class, 'index']);
+    Route::post('/users', [UserController::class, 'store']);
+    Route::put('/users/{user}', [UserController::class, 'update']);
+    Route::delete('/users/{user}', [UserController::class, 'destroy']);
 
     Route::get('/reservations', [ReservationController::class, 'index']);
     Route::post('/reservations', [ReservationController::class, 'store']);
