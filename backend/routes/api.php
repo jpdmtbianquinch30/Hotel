@@ -11,9 +11,6 @@ use Illuminate\Support\Facades\Route;
 // Auth
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
-Route::put('/me', [AuthController::class, 'updateProfile']);
-Route::post('/me', [AuthController::class, 'updateProfile']); // upload avatar (_method=PUT)
-Route::put('/me/password', [AuthController::class, 'updatePassword']);
 
 // Chambres : lecture publique (catalogue), écriture réservée à l'admin (dans le contrôleur)
 Route::get('/rooms', [RoomController::class, 'index']);
@@ -29,6 +26,9 @@ Route::get('/rules', [RuleController::class, 'index']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
+    Route::put('/me', [AuthController::class, 'updateProfile']);
+    Route::post('/me', [AuthController::class, 'updateProfile']); // upload avatar (_method=PUT)
+    Route::put('/me/password', [AuthController::class, 'updatePassword']);
 
     Route::post('/rooms', [RoomController::class, 'store']);
     // PUT classique + POST avec _method=PUT (utilisé par le frontend pour l'upload de fichier,
