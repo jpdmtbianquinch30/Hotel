@@ -120,7 +120,9 @@
                 <td class="px-4 py-3">{{ r.checkout }}</td>
                 <td class="px-4 py-3 font-semibold text-orange-600">{{ r.bill }} FCFA</td>
                 <td class="px-4 py-3">
+                  <label for="status-{{ r.id }}" class="sr-only">Statut de la réservation de {{ r.guest?.firstname }} {{ r.guest?.lastname }}</label>
                   <select
+                    id="status-{{ r.id }}"
                     [value]="r.status"
                     (change)="changeStatus(r, $any($event.target).value)"
                     [disabled]="updatingStatusId() === r.id"
@@ -153,19 +155,19 @@
 
       <form [formGroup]="roomForm" (ngSubmit)="submitRoom()" class="space-y-4">
         <div>
-          <label class="block text-sm mb-1.5 text-ink-700">Type de chambre</label>
-          <input formControlName="room_type" type="text"
+          <label for="room_type" class="block text-sm mb-1.5 text-ink-700">Type de chambre</label>
+          <input id="room_type" formControlName="room_type" type="text"
             class="w-full rounded-lg border border-ink-300 px-3 py-2 focus:border-orange-500 outline-none" />
         </div>
 
         <div>
-          <label class="block text-sm mb-1.5 text-ink-700">Prix par nuit (FCFA)</label>
-          <input formControlName="price" type="number" min="0"
+          <label for="price" class="block text-sm mb-1.5 text-ink-700">Prix par nuit (FCFA)</label>
+          <input id="price" formControlName="price" type="number" min="0"
             class="w-full rounded-lg border border-ink-300 px-3 py-2 focus:border-orange-500 outline-none" />
         </div>
 
         <div>
-          <label class="block text-sm mb-1.5 text-ink-700">Photo (optionnel)</label>
+          <label for="photo" class="block text-sm mb-1.5 text-ink-700">Photo (optionnel)</label>
 
           @if (photoPreview()) {
             <div class="relative w-full h-40 rounded-lg overflow-hidden mb-2 border border-ink-300">
@@ -181,17 +183,18 @@
           }
 
           <input
+            id="photo"
             type="file"
             accept="image/*"
             (change)="onPhotoSelected($event)"
             class="w-full text-sm text-ink-700 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:bg-orange-50 file:text-orange-600 file:font-semibold hover:file:bg-orange-100"
           />
-          <p class="text-xs text-ink-500 mt-1">JPG, PNG... 4 Mo maximum.</p>
+          <p class="text-xs text-ink-500 mt-1">JPG, PNG... 10 Mo maximum.</p>
         </div>
 
         <div>
-          <label class="block text-sm mb-1.5 text-ink-700">Description (optionnel)</label>
-          <textarea formControlName="description" rows="3"
+          <label for="description" class="block text-sm mb-1.5 text-ink-700">Description (optionnel)</label>
+          <textarea id="description" formControlName="description" rows="3"
             class="w-full rounded-lg border border-ink-300 px-3 py-2 focus:border-orange-500 outline-none"></textarea>
         </div>
 

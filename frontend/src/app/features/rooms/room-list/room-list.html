@@ -14,7 +14,7 @@
         <article class="bg-white border border-orange-100 rounded-2xl overflow-hidden flex flex-col shadow-sm">
           <div class="h-44 bg-orange-50 flex items-center justify-center">
             @if (room.photo) {
-              <img [src]="room.photo" [alt]="room.room_type" class="w-full h-full object-cover" />
+              <img [src]="room.photo" [alt]="'Photo de la chambre ' + room.room_type" class="w-full h-full object-cover" />
             } @else {
               <span class="font-extrabold text-orange-200 text-2xl">{{ room.room_type }}</span>
             }
@@ -71,38 +71,38 @@
         <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-4">
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <label class="block text-sm mb-1.5 text-ink-700">Prénom</label>
-              <input formControlName="firstname" type="text"
+              <label for="firstname" class="block text-sm mb-1.5 text-ink-700">Prénom</label>
+              <input id="firstname" formControlName="firstname" type="text"
                 class="w-full rounded-lg border border-ink-300 px-3 py-2 focus:border-orange-500 outline-none" />
             </div>
             <div>
-              <label class="block text-sm mb-1.5 text-ink-700">Nom</label>
-              <input formControlName="lastname" type="text"
+              <label for="lastname" class="block text-sm mb-1.5 text-ink-700">Nom</label>
+              <input id="lastname" formControlName="lastname" type="text"
                 class="w-full rounded-lg border border-ink-300 px-3 py-2 focus:border-orange-500 outline-none" />
             </div>
           </div>
 
           <div>
-            <label class="block text-sm mb-1.5 text-ink-700">Adresse (optionnel)</label>
-            <input formControlName="address" type="text"
+            <label for="address" class="block text-sm mb-1.5 text-ink-700">Adresse (optionnel)</label>
+            <input id="address" formControlName="address" type="text"
               class="w-full rounded-lg border border-ink-300 px-3 py-2 focus:border-orange-500 outline-none" />
           </div>
 
           <div>
-            <label class="block text-sm mb-1.5 text-ink-700">Téléphone (optionnel)</label>
-            <input formControlName="contact_no" type="tel"
+            <label for="contact_no" class="block text-sm mb-1.5 text-ink-700">Téléphone (optionnel)</label>
+            <input id="contact_no" formControlName="contact_no" type="tel"
               class="w-full rounded-lg border border-ink-300 px-3 py-2 focus:border-orange-500 outline-none" />
           </div>
 
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <label class="block text-sm mb-1.5 text-ink-700">Arrivée</label>
-              <input formControlName="checkin" type="date"
+              <label for="checkin" class="block text-sm mb-1.5 text-ink-700">Arrivée</label>
+              <input id="checkin" formControlName="checkin" type="date"
                 class="w-full rounded-lg border border-ink-300 px-3 py-2 focus:border-orange-500 outline-none text-sm" />
             </div>
             <div>
-              <label class="block text-sm mb-1.5 text-ink-700">Départ</label>
-              <input formControlName="checkout" type="date"
+              <label for="checkout" class="block text-sm mb-1.5 text-ink-700">Départ</label>
+              <input id="checkout" formControlName="checkout" type="date"
                 class="w-full rounded-lg border border-ink-300 px-3 py-2 focus:border-orange-500 outline-none text-sm" />
             </div>
           </div>

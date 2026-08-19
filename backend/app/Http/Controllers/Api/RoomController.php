@@ -26,7 +26,7 @@ class RoomController extends Controller
         $data = $request->validate([
             'room_type' => ['required', 'string', 'max:50'],
             'price' => ['required', 'numeric', 'min:0'],
-            'photo' => ['nullable', 'image', 'max:4096'], // 4 Mo max
+            'photo' => ['nullable', 'image', 'max:10240'], // 10 Mo max
             'description' => ['nullable', 'string'],
             'is_available' => ['boolean'],
         ]);
@@ -47,7 +47,7 @@ class RoomController extends Controller
         $data = $request->validate([
             'room_type' => ['sometimes', 'string', 'max:50'],
             'price' => ['sometimes', 'numeric', 'min:0'],
-            'photo' => ['nullable', 'image', 'max:4096'],
+            'photo' => ['nullable', 'image', 'max:10240'],
             'remove_photo' => ['sometimes', 'boolean'],
             'description' => ['nullable', 'string'],
             'is_available' => ['boolean'],
