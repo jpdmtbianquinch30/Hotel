@@ -1,21 +1,25 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..600&family=Manrope:wght@400;500;600;700;800&display=swap");
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Inter", ui-sans-serif, sans-serif;
+  --font-sans: "Manrope", ui-sans-serif, sans-serif;
+  --font-display: "Fraunces", ui-serif, serif;
 
-  --color-orange-50: #fff7ed;
-  --color-orange-100: #ffedd5;
-  --color-orange-200: #fed7aa;
-  --color-orange-400: #fb923c;
-  --color-orange-500: #f97316;
-  --color-orange-600: #ea580c;
-  --color-orange-700: #c2410c;
+  --color-orange-50: #fff4ed;
+  --color-orange-100: #ffe4d2;
+  --color-orange-200: #ffc7a0;
+  --color-orange-400: #ff7a3d;
+  --color-orange-500: #f2571b;
+  --color-orange-600: #d63f0c;
+  --color-orange-700: #a82f09;
 
-  --color-ink-900: #1f2937;
-  --color-ink-700: #374151;
-  --color-ink-500: #6b7280;
-  --color-ink-300: #d1d5db;
+  --color-wood-400: #c9a268;
+  --color-wood-500: #b8873f;
+
+  --color-ink-900: #211a14;
+  --color-ink-700: #453931;
+  --color-ink-500: #786858;
+  --color-ink-300: #dad0c2;
 }
 
 html {

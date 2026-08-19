@@ -1,10 +1,15 @@
 <footer class="bg-ink-900 text-white/70 mt-24">
   <div class="max-w-6xl mx-auto px-5 py-10 flex flex-col md:flex-row justify-between gap-6 text-sm">
-    <div>
-      <p class="font-extrabold text-lg text-white">Galsen<span class="text-orange-400">Hotel</span></p>
-      <p class="mt-1 text-xs text-white/40">© {{ year }} — tous droits réservés</p>
+    <div class="flex items-center gap-2.5">
+      <img src="logoHotel.png" alt="GalsenHotel" class="w-8 h-8 rounded-lg object-cover" />
+      <div>
+        <p class="font-display text-lg font-semibold text-white">
+          Galsen<span class="italic text-orange-400">Hotel</span>
+        </p>
+        <p class="mt-0.5 text-xs text-white/40">© {{ year }} — tous droits réservés</p>
+      </div>
     </div>
-    <nav class="flex gap-6">
+    <nav class="flex gap-6 items-center">
       <a routerLink="/chambres" class="hover:text-orange-400 transition-colors">Chambres</a>
       <a routerLink="/connexion" class="hover:text-orange-400 transition-colors">Connexion</a>
       <a routerLink="/inscription" class="hover:text-orange-400 transition-colors">Inscription</a>

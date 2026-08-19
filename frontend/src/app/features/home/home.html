@@ -1,54 +1,120 @@
-<section class="bg-white">
-  <div class="max-w-6xl mx-auto px-5 py-24 md:py-32 grid md:grid-cols-2 gap-12 items-center">
-    <div>
-      <p class="text-xs text-orange-600 font-semibold tracking-widest uppercase">Bienvenue chez vous, à Dakar</p>
-      <h1 class="text-4xl md:text-5xl font-extrabold leading-tight mt-4 text-ink-900">
-        Réservez votre séjour <span class="text-orange-500">en quelques clics.</span>
+<!-- HERO -->
+<section class="relative overflow-hidden bg-white">
+  <div class="max-w-6xl mx-auto px-5 pt-16 pb-20 md:pt-24 md:pb-28 grid md:grid-cols-2 gap-16 items-center">
+
+    <div class="relative z-10">
+      <p class="text-xs text-orange-600 font-semibold tracking-[0.2em] uppercase">Côte de Dakar, Sénégal</p>
+      <h1 class="font-display text-4xl md:text-6xl font-medium leading-[1.05] mt-5 text-ink-900">
+        L'hospitalité sénégalaise,
+        <span class="italic text-orange-600">face à l'Atlantique.</span>
       </h1>
-      <p class="text-ink-500 mt-6 leading-relaxed">
-        GalsenHotel, c'est la réservation simple et rapide : choisissez votre chambre,
-        vos dates, et confirmez votre séjour en toute confiance.
+      <p class="text-ink-500 mt-6 leading-relaxed max-w-md">
+        GalsenHotel, c'est des chambres pensées pour se sentir chez soi, un accueil qui prend le temps,
+        et l'océan à quelques pas. Choisissez vos dates, on s'occupe du reste.
       </p>
-      <a routerLink="/chambres"
-        class="inline-block mt-8 bg-orange-500 text-white font-semibold px-6 py-3 rounded-lg hover:bg-orange-600 transition-colors">
-        Voir les chambres disponibles
-      </a>
+      <div class="flex flex-wrap gap-3 mt-9">
+        <a routerLink="/chambres"
+          class="inline-block bg-orange-500 text-white font-semibold px-7 py-3.5 rounded-full hover:bg-orange-600 transition-colors">
+          Voir les chambres disponibles
+        </a>
+        <a routerLink="/galerie"
+          class="inline-block border border-orange-200 text-ink-700 font-semibold px-7 py-3.5 rounded-full hover:bg-orange-50 transition-colors">
+          Découvrir la galerie
+        </a>
+      </div>
     </div>
-    <div class="bg-orange-50 border border-orange-100 rounded-2xl p-6">
-      <p class="text-xs text-orange-600 font-semibold uppercase tracking-widest mb-4">Exemple de réservation</p>
-      <div class="space-y-3 text-sm">
-        <div class="flex justify-between border-b border-orange-100 pb-2">
-          <span class="text-ink-500">Chambre</span>
-          <span class="font-semibold text-ink-900">Deluxe — n° 204</span>
-        </div>
-        <div class="flex justify-between border-b border-orange-100 pb-2">
-          <span class="text-ink-500">Arrivée</span>
-          <span class="font-semibold text-ink-900">18 / 08 / 2026</span>
-        </div>
-        <div class="flex justify-between border-b border-orange-100 pb-2">
-          <span class="text-ink-500">Départ</span>
-          <span class="font-semibold text-ink-900">21 / 08 / 2026</span>
-        </div>
-        <div class="flex justify-between">
-          <span class="text-ink-500">Statut</span>
-          <span class="font-semibold text-orange-600">Confirmée</span>
+
+    <div class="relative">
+      <div class="absolute -inset-3 md:-inset-4 bg-orange-500 rounded-[2.5rem_2.5rem_2.5rem_8rem] md:rounded-[3rem_3rem_3rem_11rem] -z-10"></div>
+
+      <svg viewBox="0 0 200 200" class="hidden md:block absolute -top-10 -right-10 w-36 h-36 text-orange-200 pointer-events-none" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M20,180 A160,160 0 0,1 180,20" />
+        <path d="M45,180 A135,135 0 0,1 180,45" />
+        <path d="M70,180 A110,110 0 0,1 180,70" />
+      </svg>
+
+      <img
+        src="acceuilHotel.jpg"
+        alt="Vue aérienne de l'hôtel bordé de baobabs, entre plage et végétation"
+        class="relative w-full h-[340px] md:h-[440px] object-cover rounded-[2rem_2rem_2rem_6rem] md:rounded-[2.5rem_2.5rem_2.5rem_9rem] border-4 border-white shadow-2xl"
+      />
+
+      <div class="absolute -bottom-6 left-6 md:-left-6 bg-white rounded-2xl shadow-xl px-5 py-4 flex items-center gap-3 border border-orange-100">
+        <span class="font-display text-2xl font-semibold text-orange-600">4.9</span>
+        <div class="leading-tight">
+          <p class="text-xs font-semibold text-ink-900">Excellent</p>
+          <p class="text-[11px] text-ink-500">128 avis voyageurs</p>
         </div>
       </div>
     </div>
   </div>
+
+  <!-- séparateur en trait dessiné -->
+<svg viewBox="0 0 1200 60" preserveAspectRatio="none" class="w-full h-10">
+  <defs>
+    <linearGradient id="waveGradient" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffe4d2" />
+      <stop offset="100%" stop-color="#f2571b" />
+    </linearGradient>
+  </defs>
+  <path d="M0,30 Q150,0 300,30 T600,30 T900,30 T1200,30" fill="none" stroke="url(#waveGradient)" stroke-width="1.5" />
+</svg>
+
+<!-- SERVICES -->
+<section class="max-w-6xl mx-auto px-5 py-16 md:py-20 relative">
+  <svg viewBox="0 0 200 200" class="hidden md:block absolute top-0 left-0 w-28 h-28 text-orange-100 -translate-x-6 -translate-y-6 pointer-events-none" fill="none" stroke="currentColor" stroke-width="1.5">
+    <path d="M180,20 A160,160 0 0,0 20,180" />
+    <path d="M180,45 A135,135 0 0,0 45,180" />
+  </svg>
+
+  <div class="grid md:grid-cols-3 gap-10 relative">
+    <div class="border-t-2 border-wood-500 pt-5">
+      <svg viewBox="0 0 24 24" class="w-7 h-7 text-orange-500 mb-3" fill="none" stroke="currentColor" stroke-width="1.6">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 2v4m0 12v4M2 12h4m12 0h4M6.3 6.3l2.8 2.8m5.8 5.8l2.8 2.8M17.7 6.3l-2.8 2.8m-5.8 5.8L6.3 17.7" />
+      </svg>
+      <h3 class="font-display text-xl font-semibold text-ink-900">Réservation instantanée</h3>
+      <p class="text-ink-500 mt-2 text-sm leading-relaxed">Choisissez vos dates, confirmez, c'est enregistré immédiatement.</p>
+    </div>
+    <div class="border-t-2 border-wood-500 pt-5">
+      <svg viewBox="0 0 24 24" class="w-7 h-7 text-orange-500 mb-3" fill="none" stroke="currentColor" stroke-width="1.6">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <h3 class="font-display text-xl font-semibold text-ink-900">Suivi transparent</h3>
+      <p class="text-ink-500 mt-2 text-sm leading-relaxed">Retrouvez l'historique complet de vos séjours à tout moment.</p>
+    </div>
+    <div class="border-t-2 border-wood-500 pt-5">
+      <svg viewBox="0 0 24 24" class="w-7 h-7 text-orange-500 mb-3" fill="none" stroke="currentColor" stroke-width="1.6">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M20.8 4.6a5.5 5.5 0 00-7.8 0L12 5.6l-1-1a5.5 5.5 0 10-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 000-7.8z" />
+      </svg>
+      <h3 class="font-display text-xl font-semibold text-ink-900">Un accueil sur mesure</h3>
+      <p class="text-ink-500 mt-2 text-sm leading-relaxed">Chaque chambre est pensée pour un séjour sans accroc.</p>
+    </div>
+  </div>
 </section>
 
-<section class="max-w-6xl mx-auto px-5 py-20 grid md:grid-cols-3 gap-8">
-  <div class="border-t-2 border-orange-500 pt-4">
-    <h3 class="text-xl font-bold text-ink-900">Réservation instantanée</h3>
-    <p class="text-ink-500 mt-2 text-sm leading-relaxed">Choisissez vos dates, confirmez, c'est enregistré immédiatement.</p>
-  </div>
-  <div class="border-t-2 border-orange-500 pt-4">
-    <h3 class="text-xl font-bold text-ink-900">Suivi transparent</h3>
-    <p class="text-ink-500 mt-2 text-sm leading-relaxed">Retrouvez l'historique complet de vos séjours à tout moment.</p>
-  </div>
-  <div class="border-t-2 border-orange-500 pt-4">
-    <h3 class="text-xl font-bold text-ink-900">Un accueil sur mesure</h3>
-    <p class="text-ink-500 mt-2 text-sm leading-relaxed">Chaque chambre est pensée pour un séjour sans accroc.</p>
+<!-- CITATION -->
+<section class="max-w-3xl mx-auto px-5 pb-16 md:pb-20 text-center">
+  <p class="font-display italic text-2xl md:text-3xl text-ink-900 leading-snug">
+    « On s'est sentis attendus dès la porte franchie — le genre d'accueil qui donne
+    envie de rester une nuit de plus. »
+  </p>
+  <p class="text-sm text-ink-500 mt-4">— Un séjour à GalsenHotel</p>
+</section>
+
+<!-- CTA -->
+<section class="max-w-6xl mx-auto px-5 pb-24">
+  <div class="relative bg-orange-500 rounded-[2rem_2rem_2rem_6rem] md:rounded-[2.5rem_2.5rem_2.5rem_10rem] px-8 py-14 md:px-16 md:py-16 text-center overflow-hidden">
+    <svg viewBox="0 0 200 200" class="hidden md:block absolute -bottom-12 -left-12 w-48 h-48 text-orange-400/50 pointer-events-none" fill="none" stroke="currentColor" stroke-width="1.5">
+      <path d="M20,180 A160,160 0 0,1 180,20" />
+      <path d="M45,180 A135,135 0 0,1 180,45" />
+    </svg>
+    <h2 class="font-display text-3xl md:text-4xl font-medium text-white relative">
+      Votre séjour vous attend.
+    </h2>
+    <p class="text-orange-50 mt-3 relative">Consultez les chambres disponibles et réservez en quelques minutes.</p>
+    <a routerLink="/chambres"
+      class="inline-block mt-7 bg-white text-orange-600 font-semibold px-7 py-3.5 rounded-full hover:bg-orange-50 transition-colors relative">
+      Voir les chambres
+    </a>
   </div>
 </section>

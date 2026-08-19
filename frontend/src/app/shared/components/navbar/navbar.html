@@ -1,15 +1,28 @@
 <header class="sticky top-0 z-50 bg-white border-b border-orange-100 shadow-sm">
   <div class="max-w-6xl mx-auto px-5 flex items-center justify-between h-16">
-    <a routerLink="/" (click)="closeMenu()" class="flex items-center gap-2 font-extrabold text-xl text-ink-900">
-      <span class="w-8 h-8 rounded-lg bg-orange-500 text-white flex items-center justify-center text-sm">GH</span>
-      Galsen<span class="text-orange-500">Hotel</span>
+        <a routerLink="/" (click)="closeMenu()" class="flex items-center gap-2.5">
+      <img src="logoHotel.png" alt="GalsenHotel" class="w-9 h-9 rounded-lg object-cover" />
+      <span class="font-display text-xl font-semibold text-ink-900">
+        Galsen<span class="italic text-orange-600">Hotel</span>
+      </span>
     </a>
 
     <nav class="hidden md:flex items-center gap-2 text-sm">
-      <a routerLink="/chambres" routerLinkActive="bg-orange-50 text-orange-600" aria-label="Chambres"
+      <a routerLink="/" [routerLinkActiveOptions]="{exact: true}" routerLinkActive="bg-orange-50 text-orange-600" aria-label="Accueil"
         class="group relative p-2.5 rounded-lg text-ink-700 hover:bg-orange-50 hover:text-orange-600 transition-colors">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
           <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+        </svg>
+        <span class="pointer-events-none absolute left-1/2 top-full mt-2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-ink-900 px-2.5 py-1.5 text-xs font-medium text-white opacity-0 scale-95 transition-all duration-150 group-hover:opacity-100 group-hover:scale-100 z-50">
+          Accueil
+          <span class="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 rotate-45 bg-ink-900"></span>
+        </span>
+      </a>
+
+      <a routerLink="/chambres" routerLinkActive="bg-orange-50 text-orange-600" aria-label="Chambres"
+        class="group relative p-2.5 rounded-lg text-ink-700 hover:bg-orange-50 hover:text-orange-600 transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 18v-6a3 3 0 013-3h12a3 3 0 013 3v6M3 18h18M3 18v2M21 18v2M6 15v-3a1 1 0 011-1h2a1 1 0 011 1v3" />
         </svg>
         <span class="pointer-events-none absolute left-1/2 top-full mt-2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-ink-900 px-2.5 py-1.5 text-xs font-medium text-white opacity-0 scale-95 transition-all duration-150 group-hover:opacity-100 group-hover:scale-100 z-50">
           Chambres
@@ -104,9 +117,15 @@
 
   @if (menuOpen) {
     <nav class="md:hidden flex items-center justify-around px-5 py-3 border-t border-orange-100">
-      <a routerLink="/chambres" (click)="closeMenu()" aria-label="Chambres" class="flex flex-col items-center gap-1 p-2.5 text-ink-700">
+      <a routerLink="/" (click)="closeMenu()" aria-label="Accueil" class="flex flex-col items-center gap-1 p-2.5 text-ink-700">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
           <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+        </svg>
+        <span class="text-[11px] font-medium">Accueil</span>
+      </a>
+      <a routerLink="/chambres" (click)="closeMenu()" aria-label="Chambres" class="flex flex-col items-center gap-1 p-2.5 text-ink-700">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 18v-6a3 3 0 013-3h12a3 3 0 013 3v6M3 18h18M3 18v2M21 18v2M6 15v-3a1 1 0 011-1h2a1 1 0 011 1v3" />
         </svg>
         <span class="text-[11px] font-medium">Chambres</span>
       </a>

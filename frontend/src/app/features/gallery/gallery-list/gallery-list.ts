@@ -16,6 +16,7 @@ export class GalleryList {
   readonly loading = signal(true);
   readonly loadError = signal<string | null>(null);
   readonly activeCategory = signal<string | null>(null);
+  readonly selectedItem = signal<Gallery | null>(null);
 
   readonly categories = computed(() => {
     const set = new Set(this.items().map((item) => item.category));
@@ -47,5 +48,13 @@ export class GalleryList {
 
   setCategory(category: string | null): void {
     this.activeCategory.set(category);
+  }
+
+  openItem(item: Gallery): void {
+    this.selectedItem.set(item);
+  }
+
+  closeItem(): void {
+    this.selectedItem.set(null);
   }
 }

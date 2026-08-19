@@ -1,36 +1,62 @@
-<section class="max-w-6xl mx-auto px-5 py-16">
-  <p class="text-xs text-orange-600 font-semibold tracking-widest uppercase">Découvrir</p>
-  <h1 class="text-4xl font-extrabold text-ink-900 mt-2 mb-8">Galerie</h1>
+<section class="max-w-6xl mx-auto px-5 py-16 md:py-20 relative">
+  <svg viewBox="0 0 200 200" class="hidden md:block absolute top-0 right-0 w-32 h-32 text-orange-100 translate-x-6 -translate-y-6 pointer-events-none" fill="none" stroke="currentColor" stroke-width="1.5">
+    <path d="M20,180 A160,160 0 0,1 180,20" />
+    <path d="M45,180 A135,135 0 0,1 180,45" />
+  </svg>
+
+  <div class="relative max-w-xl">
+    <p class="text-xs text-orange-600 font-semibold tracking-[0.2em] uppercase">Découvrir</p>
+    <h1 class="font-display text-4xl md:text-5xl font-medium text-ink-900 mt-3">
+      La galerie, <span class="italic text-orange-600">en images.</span>
+    </h1>
+    <p class="text-ink-500 mt-4 leading-relaxed">
+      Chambres, espaces communs, extérieurs : un aperçu de ce qui vous attend sur place.
+    </p>
+  </div>
 
   @if (loading()) {
-    <p class="text-ink-500">Chargement...</p>
+    <div class="flex flex-col items-center text-center py-24 text-ink-500">
+      <svg viewBox="0 0 200 200" class="w-16 h-16 text-orange-200 mb-4 animate-pulse" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M20,180 A160,160 0 0,1 180,20" />
+        <path d="M45,180 A135,135 0 0,1 180,45" />
+        <path d="M70,180 A110,110 0 0,1 180,70" />
+      </svg>
+      Chargement de la galerie...
+    </div>
   } @else if (loadError()) {
-    <p class="text-red-600">{{ loadError() }}</p>
+    <div class="mt-12 rounded-[1.5rem_1.5rem_1.5rem_3rem] border border-red-100 bg-red-50 px-6 py-5 text-red-700 max-w-lg">
+      {{ loadError() }}
+    </div>
   } @else if (items().length === 0) {
-    <p class="text-ink-500">Aucune image pour le moment.</p>
+    <div class="mt-16 text-center py-16 border border-dashed border-orange-200 rounded-[2rem_2rem_2rem_5rem]">
+      <p class="font-display text-xl text-ink-900">Aucune image pour le moment.</p>
+      <p class="text-ink-500 text-sm mt-2">La galerie sera bientôt garnie de nouvelles photos.</p>
+    </div>
   } @else {
-    @if (categories().length > 1) {
-      <div class="flex flex-wrap gap-2 mb-8">
+    @if (categories().length > 0) {
+      <div class="flex flex-wrap gap-2 mt-10 mb-10 relative">
         <button
           (click)="setCategory(null)"
-          class="px-4 py-2 text-sm font-semibold rounded-full border transition-colors"
+          class="px-5 py-2 text-sm font-semibold rounded-full border transition-colors"
           [class.bg-orange-500]="activeCategory() === null"
           [class.text-white]="activeCategory() === null"
           [class.border-orange-500]="activeCategory() === null"
           [class.border-ink-300]="activeCategory() !== null"
-          [class.text-ink-600]="activeCategory() !== null"
+          [class.text-ink-700]="activeCategory() !== null"
+          [class.hover:bg-orange-50]="activeCategory() !== null"
         >
           Toutes
         </button>
         @for (category of categories(); track category) {
           <button
             (click)="setCategory(category)"
-            class="px-4 py-2 text-sm font-semibold rounded-full border transition-colors"
+            class="px-5 py-2 text-sm font-semibold rounded-full border transition-colors"
             [class.bg-orange-500]="activeCategory() === category"
             [class.text-white]="activeCategory() === category"
             [class.border-orange-500]="activeCategory() === category"
             [class.border-ink-300]="activeCategory() !== category"
-            [class.text-ink-600]="activeCategory() !== category"
+            [class.text-ink-700]="activeCategory() !== category"
+            [class.hover:bg-orange-50]="activeCategory() !== category"
           >
             {{ category }}
           </button>
@@ -38,21 +64,52 @@
       </div>
     }
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 relative">
       @for (item of filteredItems(); track item.id) {
-        <div class="bg-white border border-orange-100 rounded-2xl overflow-hidden shadow-sm">
-          <div class="h-48">
-            <img [src]="item.image" [alt]="item.title" class="w-full h-full object-cover" />
+        <article
+          (click)="openItem(item)"
+          class="group bg-white border border-orange-100 rounded-[1.5rem_1.5rem_1.5rem_3rem] overflow-hidden shadow-sm hover:shadow-xl transition-shadow cursor-pointer"
+        >
+                    <div class="relative h-52 overflow-hidden">
+            <img [src]="item.image" [alt]="item.title"
+              class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+            <span class="absolute top-3 left-3 bg-white/90 backdrop-blur text-orange-600 text-[11px] font-semibold uppercase tracking-wide px-3 py-1 rounded-full">
+              {{ item.category }}
+            </span>
+            <div class="absolute inset-x-0 bottom-0 h-24 pointer-events-none"
+              style="background: linear-gradient(to bottom, transparent, rgba(33,26,20,0.65));"></div>
           </div>
-          <div class="p-4">
-            <p class="text-xs text-orange-600 font-semibold uppercase tracking-wide">{{ item.category }}</p>
-            <p class="font-semibold text-ink-900 mt-1">{{ item.title }}</p>
+          <div class="p-5">
+            <p class="font-display text-lg font-semibold text-ink-900">{{ item.title }}</p>
             @if (item.description) {
-              <p class="text-sm text-ink-500 mt-1">{{ item.description }}</p>
+              <p class="text-sm text-ink-500 mt-1 leading-relaxed">{{ item.description }}</p>
             }
           </div>
-        </div>
+        </article>
       }
     </div>
   }
 </section>
+
+@if (selectedItem(); as item) {
+  <div class="fixed inset-0 bg-ink-900/70 flex items-center justify-center p-4 z-50" (click)="closeItem()">
+    <div class="bg-white rounded-[1.5rem_1.5rem_1.5rem_3rem] max-w-2xl w-full overflow-hidden max-h-[90vh] flex flex-col" (click)="$event.stopPropagation()">
+      <div class="relative">
+        <img [src]="item.image" [alt]="item.title" class="w-full max-h-[60vh] object-cover" />
+        <button (click)="closeItem()" aria-label="Fermer"
+          class="absolute top-3 right-3 bg-white/90 backdrop-blur rounded-full p-2 hover:bg-white transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-ink-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div class="p-6 overflow-y-auto">
+        <span class="text-orange-600 text-[11px] font-semibold uppercase tracking-wide">{{ item.category }}</span>
+        <h2 class="font-display text-2xl font-semibold text-ink-900 mt-1">{{ item.title }}</h2>
+        @if (item.description) {
+          <p class="text-ink-500 mt-2 leading-relaxed">{{ item.description }}</p>
+        }
+      </div>
+    </div>
+  </div>
+}
