@@ -37,6 +37,11 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadComponent: () => import('./features/profile/profile').then((m) => m.Profile),
   },
+    {
+    path: 'reglements',
+    loadComponent: () =>
+      import('./features/rules/rules-list/rules-list').then((m) => m.RulesList),
+  },
   {
     path: 'admin',
     canActivate: [adminGuard],

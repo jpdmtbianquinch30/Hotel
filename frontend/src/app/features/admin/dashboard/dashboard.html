@@ -285,6 +285,16 @@
                   >
                     Supprimer
                   </button>
+                      <button
+                        (click)="setTab('rules')"
+                        class="px-4 py-2.5 text-sm font-semibold border-b-2 -mb-px transition-colors"
+                        [class.border-orange-500]="tab() === 'rules'"
+                        [class.text-orange-600]="tab() === 'rules'"
+                        [class.border-transparent]="tab() !== 'rules'"
+                        [class.text-ink-500]="tab() !== 'rules'"
+                      >
+                        Règlements
+                      </button>
                 </td>
               </tr>
             }
@@ -294,6 +304,92 @@
     }
   }
 </section>
+  <!-- ===== Onglet Règlements ===== -->
+  @if (tab() === 'rules') {
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="text-xl font-semibold text-ink-900">Règles et règlement</h2>
+      <button (click)="openCreateRule()"
+        class="bg-orange-500 text-white font-semibold px-5 py-2.5 rounded-full hover:bg-orange-600 transition-colors">
+        + Nouveau règlement
+      </button>
+    </div>
+
+    @if (rulesLoading()) {
+      <p class="text-ink-500">Chargement...</p>
+    } @else if (rulesError()) {
+      <p class="text-red-600">{{ rulesError() }}</p>
+    } @else if (rules().length === 0) {
+      <p class="text-ink-500">Aucun règlement pour le moment.</p>
+    } @else {
+      <div class="space-y-3">
+        @for (rule of rules(); track rule.id; let i = $index; let first = $first; let last = $last) {
+          <div class="flex items-start gap-4 bg-white border border-orange-100 rounded-2xl p-4">
+            <span class="font-display text-lg font-semibold text-orange-300 shrink-0 pt-0.5">
+              {{ (i + 1) < 10 ? '0' + (i + 1) : (i + 1) }}
+            </span>
+            <div class="flex-1">
+              <p class="font-semibold text-ink-900">{{ rule.title }}</p>
+              <p class="text-sm text-ink-500 mt-1">{{ rule.content }}</p>
+            </div>
+            <div class="flex flex-col items-center gap-1 shrink-0">
+              <button (click)="moveRule(rule, 'up')" [disabled]="first || reorderingRules()"
+                class="text-ink-500 hover:text-orange-600 disabled:opacity-30 disabled:hover:text-ink-500 transition-colors" aria-label="Monter">
+                ▲
+              </button>
+              <button (click)="moveRule(rule, 'down')" [disabled]="last || reorderingRules()"
+                class="text-ink-500 hover:text-orange-600 disabled:opacity-30 disabled:hover:text-ink-500 transition-colors" aria-label="Descendre">
+                ▼
+              </button>
+            </div>
+            <div class="flex gap-3 shrink-0 pt-0.5 text-sm font-semibold">
+              <button (click)="openEditRule(rule)" class="text-orange-600 hover:underline">Modifier</button>
+              <button (click)="deleteRule(rule)" [disabled]="deletingRuleId() === rule.id" class="text-red-600 hover:underline disabled:opacity-50">
+                Supprimer
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  }
+
+  @if (ruleModalOpen()) {
+    <div class="fixed inset-0 bg-ink-900/60 flex items-center justify-center p-4 z-50" (click)="closeRuleModal()">
+      <div class="bg-white rounded-[1.5rem_1.5rem_1.5rem_3rem] max-w-lg w-full p-6" (click)="$event.stopPropagation()">
+        <h2 class="font-display text-2xl font-semibold text-ink-900 mb-6">
+          {{ editingRule() ? 'Modifier le règlement' : 'Nouveau règlement' }}
+        </h2>
+
+        <form [formGroup]="ruleForm" (ngSubmit)="submitRule()" class="space-y-4">
+          <div>
+            <label for="rule_title" class="block text-sm mb-1.5 text-ink-700">Titre</label>
+            <input id="rule_title" formControlName="title" type="text"
+              class="w-full rounded-lg border border-ink-300 px-3 py-2 focus:border-orange-500 outline-none" />
+          </div>
+
+          <div>
+            <label for="rule_content" class="block text-sm mb-1.5 text-ink-700">Contenu</label>
+            <textarea id="rule_content" formControlName="content" rows="4"
+              class="w-full rounded-lg border border-ink-300 px-3 py-2 focus:border-orange-500 outline-none"></textarea>
+          </div>
+
+          @if (ruleFormError()) {
+            <p class="text-red-600 text-sm">{{ ruleFormError() }}</p>
+          }
+
+          <div class="flex gap-3 pt-2">
+            <button type="submit" [disabled]="ruleSubmitting()"
+              class="flex-1 bg-orange-500 text-white font-semibold py-2.5 rounded-full hover:bg-orange-600 transition-colors disabled:opacity-60">
+              {{ ruleSubmitting() ? 'Enregistrement...' : 'Enregistrer' }}
+            </button>
+            <button type="button" (click)="closeRuleModal()" class="border border-ink-300 px-5 rounded-full hover:bg-orange-50 transition-colors">
+              Annuler
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
 
 <!-- ===== Modal Galerie (création / édition) ===== -->
 @if (galleryModalOpen()) {

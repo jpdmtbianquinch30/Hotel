@@ -1,0 +1,49 @@
+<section class="max-w-4xl mx-auto px-5 py-16 md:py-20 relative">
+  <svg viewBox="0 0 200 200" class="hidden md:block absolute top-0 right-0 w-32 h-32 text-orange-100 translate-x-6 -translate-y-6 pointer-events-none" fill="none" stroke="currentColor" stroke-width="1.5">
+    <path d="M20,180 A160,160 0 0,1 180,20" />
+    <path d="M45,180 A135,135 0 0,1 180,45" />
+  </svg>
+
+  <div class="relative max-w-xl">
+    <p class="text-xs text-orange-600 font-semibold tracking-[0.2em] uppercase">À savoir</p>
+    <h1 class="font-display text-4xl md:text-5xl font-medium text-ink-900 mt-3">
+      Règles <span class="italic text-orange-600">et règlement.</span>
+    </h1>
+    <p class="text-ink-500 mt-4 leading-relaxed">
+      Quelques repères pour que le séjour se passe bien, pour vous comme pour les autres client·e·s.
+    </p>
+  </div>
+
+  @if (loading()) {
+    <div class="flex flex-col items-center text-center py-24 text-ink-500">
+      <svg viewBox="0 0 200 200" class="w-16 h-16 text-orange-200 mb-4 animate-pulse" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M20,180 A160,160 0 0,1 180,20" />
+        <path d="M45,180 A135,135 0 0,1 180,45" />
+        <path d="M70,180 A110,110 0 0,1 180,70" />
+      </svg>
+      Chargement du règlement...
+    </div>
+  } @else if (loadError()) {
+    <div class="mt-12 rounded-[1.5rem_1.5rem_1.5rem_3rem] border border-red-100 bg-red-50 px-6 py-5 text-red-700 max-w-lg">
+      {{ loadError() }}
+    </div>
+  } @else if (rules().length === 0) {
+    <div class="mt-16 text-center py-16 border border-dashed border-orange-200 rounded-[2rem_2rem_2rem_5rem]">
+      <p class="font-display text-xl text-ink-900">Aucun règlement publié pour le moment.</p>
+    </div>
+  } @else {
+    <ol class="mt-12 space-y-6 relative">
+      @for (rule of rules(); track rule.id; let i = $index) {
+        <li class="flex gap-5 bg-white border border-orange-100 rounded-[1.5rem_1.5rem_1.5rem_3rem] p-6">
+          <span class="font-display text-2xl font-semibold text-orange-300 shrink-0">
+            {{ (i + 1) < 10 ? '0' + (i + 1) : (i + 1) }}
+          </span>
+          <div>
+            <h2 class="font-display text-lg font-semibold text-ink-900">{{ rule.title }}</h2>
+            <p class="text-ink-500 text-sm mt-1.5 leading-relaxed">{{ rule.content }}</p>
+          </div>
+        </li>
+      }
+    </ol>
+  }
+</section>

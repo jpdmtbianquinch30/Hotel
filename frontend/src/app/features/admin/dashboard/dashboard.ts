@@ -13,8 +13,10 @@ import {
 import { RoomService } from '../../../core/services/room.service';
 import { ReservationService } from '../../../core/services/reservation.service';
 import { GalleryService } from '../../../core/services/gallery.service';
+import { Rule, RulePayload } from '../../../core/models/rule.model';
+import { RuleService } from '../../../core/services/rule.service';
 
-type Tab = 'rooms' | 'gallery' | 'reservations' | 'users';
+type Tab = 'rooms' | 'gallery' | 'reservations' | 'users' | 'rules';
 
 @Component({
   selector: 'app-dashboard',
@@ -25,8 +27,9 @@ type Tab = 'rooms' | 'gallery' | 'reservations' | 'users';
 export class Dashboard {
   private readonly roomService = inject(RoomService);
   private readonly reservationService = inject(ReservationService);
-  private readonly galleryService = inject(GalleryService);
+    private readonly galleryService = inject(GalleryService);
     private readonly userService = inject(UserService);
+  private readonly ruleService = inject(RuleService);
   private readonly fb = inject(FormBuilder);
 
   readonly tab = signal<Tab>('rooms');
@@ -94,6 +97,7 @@ export class Dashboard {
     this.fetchGallery();
     this.fetchReservations();
    this.fetchUsers();
+   this.fetchRules();
   }
 
   setTab(tab: Tab): void {
@@ -155,6 +159,108 @@ export class Dashboard {
       },
     });
   }
+  
+  // --- Règlements : CRUD ---
+
+  fetchRules(): void {
+    this.rulesLoading.set(true);
+    this.ruleService.list().subscribe({
+      next: (list) => {
+        this.rules.set(list);
+        this.rulesLoading.set(false);
+      },
+      error: () => {
+        this.rulesError.set('Impossible de charger les règlements.');
+        this.rulesLoading.set(false);
+      },
+    });
+  }
+
+  openCreateRule(): void {
+    this.editingRule.set(null);
+    this.ruleFormError.set(null);
+    this.ruleForm.reset({ title: '', content: '' });
+    this.ruleModalOpen.set(true);
+  }
+
+  openEditRule(rule: Rule): void {
+    this.editingRule.set(rule);
+    this.ruleFormError.set(null);
+    this.ruleForm.reset({ title: rule.title, content: rule.content });
+    this.ruleModalOpen.set(true);
+  }
+
+  closeRuleModal(): void {
+    this.ruleModalOpen.set(false);
+  }
+
+  submitRule(): void {
+    if (this.ruleForm.invalid) {
+      this.ruleForm.markAllAsTouched();
+      return;
+    }
+
+    const raw = this.ruleForm.getRawValue();
+    const payload: RulePayload = { title: raw.title, content: raw.content };
+
+    this.ruleSubmitting.set(true);
+    this.ruleFormError.set(null);
+
+    const editing = this.editingRule();
+    const request = editing
+      ? this.ruleService.update(editing.id, payload)
+      : this.ruleService.create(payload);
+
+    request.subscribe({
+      next: () => {
+        this.ruleSubmitting.set(false);
+        this.ruleModalOpen.set(false);
+        this.fetchRules();
+      },
+      error: (err) => {
+        this.ruleSubmitting.set(false);
+        this.ruleFormError.set(err?.error?.message ?? "L'enregistrement du règlement a échoué.");
+      },
+    });
+  }
+
+  deleteRule(rule: Rule): void {
+    if (!confirm(`Supprimer le règlement "${rule.title}" ?`)) return;
+
+    this.deletingRuleId.set(rule.id);
+    this.ruleService.delete(rule.id).subscribe({
+      next: () => {
+        this.deletingRuleId.set(null);
+        this.fetchRules();
+      },
+      error: () => {
+        this.deletingRuleId.set(null);
+        this.rulesError.set('Impossible de supprimer ce règlement.');
+      },
+    });
+  }
+
+  moveRule(rule: Rule, direction: 'up' | 'down'): void {
+    const list = [...this.rules()].sort((a, b) => a.position - b.position);
+    const index = list.findIndex((r) => r.id === rule.id);
+    const swapWith = direction === 'up' ? index - 1 : index + 1;
+    if (swapWith < 0 || swapWith >= list.length) return;
+
+    [list[index], list[swapWith]] = [list[swapWith], list[index]];
+    const ids = list.map((r) => r.id);
+
+    this.reorderingRules.set(true);
+    this.ruleService.reorder(ids).subscribe({
+      next: (updated) => {
+        this.rules.set(updated);
+        this.reorderingRules.set(false);
+      },
+      error: () => {
+        this.reorderingRules.set(false);
+        this.rulesError.set("Impossible de réordonner les règlements.");
+      },
+    });
+  }
 
   toggleRole(user: User): void {
     const newRole = user.role === 'admin' ? 'client' : 'admin';
@@ -206,6 +312,24 @@ export class Dashboard {
     phone: [''],
     role: ['client' as 'admin' | 'client', Validators.required],
   });
+
+    // --- Règlements ---
+  readonly rules = signal<Rule[]>([]);
+  readonly rulesLoading = signal(true);
+  readonly rulesError = signal<string | null>(null);
+  readonly deletingRuleId = signal<number | null>(null);
+  readonly reorderingRules = signal(false);
+
+  readonly ruleModalOpen = signal(false);
+  readonly editingRule = signal<Rule | null>(null);
+  readonly ruleSubmitting = signal(false);
+  readonly ruleFormError = signal<string | null>(null);
+
+  readonly ruleForm = this.fb.nonNullable.group({
+    title: ['', Validators.required],
+    content: ['', Validators.required],
+  });
+
 
   // --- Chambres : CRUD ---
 

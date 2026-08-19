@@ -6,14 +6,23 @@ use App\Http\Controllers\Api\ReservationController;
 use App\Http\Controllers\Api\RoomController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\RuleController;
 
 // Auth
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
+//rules
+Route::get('/rules', [RuleController::class, 'index']);
+Route::post('/rules', [RuleController::class, 'store']);
+Route::put('/rules/{rule}', [RuleController::class, 'update']);
+Route::delete('/rules/{rule}', [RuleController::class, 'destroy']);
+Route::post('/rules/reorder', [RuleController::class, 'reorder']);
+
 // Chambres : lecture publique (catalogue), écriture réservée à l'admin (dans le contrôleur)
 Route::get('/rooms', [RoomController::class, 'index']);
 Route::get('/rooms/{room}', [RoomController::class, 'show']);
+
 
 // Galerie : lecture publique (images publiées uniquement), gestion réservée à l'admin
 Route::get('/gallery', [GalleryController::class, 'index']);
