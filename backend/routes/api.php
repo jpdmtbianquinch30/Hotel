@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\RuleController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\MessageController;
+use App\Http\Controllers\Api\NotificationController;
 
 // Auth
 Route::post('/register', [AuthController::class, 'register']);
@@ -26,6 +27,7 @@ Route::get('/gallery/{gallery}', [GalleryController::class, 'show']);
 
 // Règlement : lecture publique, gestion réservée à l'admin
 Route::get('/rules', [RuleController::class, 'index']);
+Route::get('/notifications/latest', [NotificationController::class, 'latest']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
@@ -36,6 +38,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/messages', [MessageController::class, 'index']);
     Route::patch('/messages/{message}/status', [MessageController::class, 'updateStatus']);
     Route::delete('/messages/{message}', [MessageController::class, 'destroy']);
+        Route::get('/notifications/admin-summary', [NotificationController::class, 'adminSummary']);
 
     Route::post('/rooms', [RoomController::class, 'store']);
     // PUT classique + POST avec _method=PUT (utilisé par le frontend pour l'upload de fichier,

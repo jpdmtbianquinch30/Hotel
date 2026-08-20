@@ -17,6 +17,7 @@ import { Rule, RulePayload } from '../../../core/models/rule.model';
 import { RuleService } from '../../../core/services/rule.service';
 import { Message, MESSAGE_STATUS_LABELS } from '../../../core/models/message.model';
 import { MessageService } from '../../../core/services/message.service';
+import { NotificationService } from '../../../core/services/notification.service';
 
 type Tab = 'rooms' | 'gallery' | 'reservations' | 'users' | 'rules' | 'messages';
 
@@ -34,6 +35,7 @@ export class Dashboard {
   private readonly ruleService = inject(RuleService);
     private readonly messageService = inject(MessageService);
   private readonly fb = inject(FormBuilder);
+    private readonly notifications = inject(NotificationService);
 
   readonly tab = signal<Tab>('rooms');
   readonly statusLabels = RESERVATION_STATUS_LABELS;
@@ -129,12 +131,13 @@ export class Dashboard {
     });
   }
 
-  markMessageStatus(msg: Message, status: 'lu' | 'traite'): void {
+    markMessageStatus(msg: Message, status: 'lu' | 'traite'): void {
     this.updatingMessageId.set(msg.id);
     this.messageService.updateStatus(msg.id, status).subscribe({
       next: (updated) => {
         this.updatingMessageId.set(null);
         this.messages.update((list) => list.map((m) => (m.id === updated.id ? updated : m)));
+        this.notifications.refreshAdminSummary();
       },
       error: () => {
         this.updatingMessageId.set(null);
@@ -156,7 +159,7 @@ export class Dashboard {
       },
     });
   }
-  
+
     // --- Utilisateurs : gestion ---
 
   fetchUsers(): void {

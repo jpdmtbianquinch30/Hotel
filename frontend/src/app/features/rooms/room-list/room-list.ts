@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { NotificationService } from '../../../core/services/notification.service';
 import { ReservationService } from '../../../core/services/reservation.service';
 import { RoomService } from '../../../core/services/room.service';
 import { Room } from '../../../core/models/room.model';
@@ -16,6 +17,7 @@ import { Room } from '../../../core/models/room.model';
 export class RoomList {
   private readonly roomService = inject(RoomService);
   private readonly reservationService = inject(ReservationService);
+  private readonly notifications = inject(NotificationService);
   private readonly fb = inject(FormBuilder);
   protected readonly auth = inject(AuthService);
   private readonly router = inject(Router);
@@ -23,6 +25,21 @@ export class RoomList {
   readonly rooms = signal<Room[]>([]);
   readonly loading = signal(true);
   readonly loadError = signal<string | null>(null);
+
+  readonly minPrice = signal<number | null>(null);
+  readonly maxPrice = signal<number | null>(null);
+
+  readonly filteredRooms = computed(() => {
+    const min = this.minPrice();
+    const max = this.maxPrice();
+
+    return this.rooms().filter((room) => {
+      const price = Number(room.price);
+      if (min !== null && price < min) return false;
+      if (max !== null && price > max) return false;
+      return true;
+    });
+  });
 
   readonly selectedRoom = signal<Room | null>(null);
   readonly submitting = signal(false);
@@ -42,6 +59,7 @@ export class RoomList {
 
   constructor() {
     this.fetchRooms();
+    this.notifications.markSeen('rooms');
   }
 
   fetchRooms(): void {
@@ -56,6 +74,19 @@ export class RoomList {
         this.loading.set(false);
       },
     });
+  }
+
+  onMinPriceChange(value: string): void {
+    this.minPrice.set(value ? Number(value) : null);
+  }
+
+  onMaxPriceChange(value: string): void {
+    this.maxPrice.set(value ? Number(value) : null);
+  }
+
+  resetPriceFilter(): void {
+    this.minPrice.set(null);
+    this.maxPrice.set(null);
   }
 
   openReservation(room: Room): void {

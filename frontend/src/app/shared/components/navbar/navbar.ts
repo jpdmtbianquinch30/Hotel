@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { NotificationService } from '../../../core/services/notification.service';
 
 @Component({
   selector: 'app-navbar',
@@ -10,9 +11,18 @@ import { AuthService } from '../../../core/services/auth.service';
   templateUrl: './navbar.html',
 })
 export class Navbar {
+  protected readonly auth = inject(AuthService);
+  protected readonly notifications = inject(NotificationService);
+  private readonly router = inject(Router);
+
   menuOpen = false;
 
-  constructor(protected readonly auth: AuthService, private readonly router: Router) {}
+  constructor() {
+    this.notifications.refresh();
+    if (this.auth.isAdmin()) {
+      this.notifications.refreshAdminSummary();
+    }
+  }
 
   toggleMenu(): void {
     this.menuOpen = !this.menuOpen;

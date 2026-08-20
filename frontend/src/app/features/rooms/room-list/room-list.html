@@ -14,6 +14,27 @@
     </p>
   </div>
 
+  <div class="flex flex-wrap items-end gap-4 mt-8 relative">
+    <div>
+      <label for="min-price" class="block text-xs text-ink-500 mb-1">Prix min (FCFA)</label>
+      <input id="min-price" type="number" min="0" placeholder="0"
+        (input)="onMinPriceChange($any($event.target).value)"
+        class="w-32 rounded-lg border border-ink-300 px-3 py-2 text-sm focus:border-orange-500 outline-none" />
+    </div>
+    <div>
+      <label for="max-price" class="block text-xs text-ink-500 mb-1">Prix max (FCFA)</label>
+      <input id="max-price" type="number" min="0" placeholder="Aucun max"
+        (input)="onMaxPriceChange($any($event.target).value)"
+        class="w-32 rounded-lg border border-ink-300 px-3 py-2 text-sm focus:border-orange-500 outline-none" />
+    </div>
+    @if (minPrice() !== null || maxPrice() !== null) {
+      <button (click)="resetPriceFilter()" type="button"
+        class="text-sm font-semibold text-orange-600 hover:underline pb-2.5">
+        Réinitialiser
+      </button>
+    }
+  </div>
+
   @if (loading()) {
     <div class="flex flex-col items-center text-center py-24 text-ink-500">
       <svg viewBox="0 0 200 200" class="w-16 h-16 text-orange-200 mb-4 animate-pulse" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -32,9 +53,14 @@
       <p class="font-display text-xl text-ink-900">Aucune chambre disponible pour le moment.</p>
       <p class="text-ink-500 text-sm mt-2">Reviens un peu plus tard, le catalogue se remplit vite.</p>
     </div>
+  } @else if (filteredRooms().length === 0) {
+    <div class="mt-16 text-center py-16 border border-dashed border-orange-200 rounded-[2rem_2rem_2rem_5rem]">
+      <p class="font-display text-xl text-ink-900">Aucune chambre ne correspond à ce budget.</p>
+      <p class="text-ink-500 text-sm mt-2">Essaie d'élargir la fourchette de prix.</p>
+    </div>
   } @else {
     <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-12 relative">
-      @for (room of rooms(); track room.id) {
+      @for (room of filteredRooms(); track room.id) {
         <article class="group bg-white border border-orange-100 rounded-[1.5rem_1.5rem_1.5rem_3rem] overflow-hidden flex flex-col shadow-sm hover:shadow-xl transition-shadow">
           <div class="relative h-48 bg-orange-50 flex items-center justify-center overflow-hidden">
             @if (room.photo) {
@@ -133,35 +159,4 @@
             <div>
               <label for="checkin" class="block text-sm mb-1.5 text-ink-700">Arrivée</label>
               <input id="checkin" formControlName="checkin" type="date"
-                class="w-full rounded-lg border border-ink-300 px-3 py-2 focus:border-orange-500 outline-none text-sm" />
-            </div>
-            <div>
-              <label for="checkout" class="block text-sm mb-1.5 text-ink-700">Départ</label>
-              <input id="checkout" formControlName="checkout" type="date"
-                class="w-full rounded-lg border border-ink-300 px-3 py-2 focus:border-orange-500 outline-none text-sm" />
-            </div>
-          </div>
-
-          <label class="flex items-center gap-2 text-sm text-ink-700">
-            <input formControlName="extra_bed" type="checkbox" class="accent-orange-500" />
-            Lit supplémentaire
-          </label>
-
-          @if (formError()) {
-            <p class="text-red-600 text-sm">{{ formError() }}</p>
-          }
-
-          <div class="flex gap-3 pt-2">
-            <button type="submit" [disabled]="submitting()"
-              class="flex-1 bg-orange-500 text-white font-semibold py-2.5 rounded-full hover:bg-orange-600 transition-colors disabled:opacity-60">
-              {{ submitting() ? 'Enregistrement...' : 'Confirmer la réservation' }}
-            </button>
-            <button type="button" (click)="closeModal()" class="border border-ink-300 px-5 rounded-full hover:bg-orange-50 transition-colors">
-              Annuler
-            </button>
-          </div>
-        </form>
-      }
-    </div>
-  </div>
-}
+                class="w-full rounded-lg border border-ink-300 px-3 py-2

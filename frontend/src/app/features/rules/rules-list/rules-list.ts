@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { Rule } from '../../../core/models/rule.model';
 import { RuleService } from '../../../core/services/rule.service';
-
+import { NotificationService } from '../../../core/services/notification.service';
 @Component({
   selector: 'app-rules-list',
   standalone: true,
@@ -11,6 +11,7 @@ import { RuleService } from '../../../core/services/rule.service';
 })
 export class RulesList {
   private readonly ruleService = inject(RuleService);
+private readonly notifications = inject(NotificationService);
 
   readonly rules = signal<Rule[]>([]);
   readonly loading = signal(true);
@@ -18,6 +19,7 @@ export class RulesList {
 
   constructor() {
     this.fetchRules();
+    this.notifications.markSeen('rules');
   }
 
   fetchRules(): void {

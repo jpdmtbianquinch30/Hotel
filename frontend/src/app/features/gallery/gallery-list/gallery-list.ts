@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { Gallery } from '../../../core/models/gallery.model';
 import { GalleryService } from '../../../core/services/gallery.service';
+import { NotificationService } from '../../../core/services/notification.service';
 
 @Component({
   selector: 'app-gallery-list',
@@ -11,6 +12,8 @@ import { GalleryService } from '../../../core/services/gallery.service';
 })
 export class GalleryList {
   private readonly galleryService = inject(GalleryService);
+  private readonly notifications = inject(NotificationService);
+
 
   readonly items = signal<Gallery[]>([]);
   readonly loading = signal(true);
@@ -30,6 +33,7 @@ export class GalleryList {
 
   constructor() {
     this.fetchGallery();
+    this.notifications.markSeen('gallery');
   }
 
   fetchGallery(): void {
