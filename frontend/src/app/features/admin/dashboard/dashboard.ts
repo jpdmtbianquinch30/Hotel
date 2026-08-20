@@ -15,8 +15,10 @@ import { ReservationService } from '../../../core/services/reservation.service';
 import { GalleryService } from '../../../core/services/gallery.service';
 import { Rule, RulePayload } from '../../../core/models/rule.model';
 import { RuleService } from '../../../core/services/rule.service';
+import { Message, MESSAGE_STATUS_LABELS } from '../../../core/models/message.model';
+import { MessageService } from '../../../core/services/message.service';
 
-type Tab = 'rooms' | 'gallery' | 'reservations' | 'users' | 'rules';
+type Tab = 'rooms' | 'gallery' | 'reservations' | 'users' | 'rules' | 'messages';
 
 @Component({
   selector: 'app-dashboard',
@@ -30,6 +32,7 @@ export class Dashboard {
     private readonly galleryService = inject(GalleryService);
     private readonly userService = inject(UserService);
   private readonly ruleService = inject(RuleService);
+    private readonly messageService = inject(MessageService);
   private readonly fb = inject(FormBuilder);
 
   readonly tab = signal<Tab>('rooms');
@@ -41,6 +44,14 @@ export class Dashboard {
     'checked_out',
     'cancelled',
   ];
+
+    // --- Messages & signalements ---
+  readonly messages = signal<Message[]>([]);
+  readonly messagesLoading = signal(true);
+  readonly messagesError = signal<string | null>(null);
+  readonly updatingMessageId = signal<number | null>(null);
+  readonly deletingMessageId = signal<number | null>(null);
+  readonly messageStatusLabels = MESSAGE_STATUS_LABELS;
 
   // --- Chambres ---
   readonly rooms = signal<Room[]>([]);
@@ -98,11 +109,54 @@ export class Dashboard {
     this.fetchReservations();
    this.fetchUsers();
    this.fetchRules();
+       this.fetchMessages();
   }
 
   setTab(tab: Tab): void {
     this.tab.set(tab);
   }
+    fetchMessages(): void {
+    this.messagesLoading.set(true);
+    this.messageService.list().subscribe({
+      next: (list) => {
+        this.messages.set(list);
+        this.messagesLoading.set(false);
+      },
+      error: () => {
+        this.messagesError.set('Impossible de charger les messages.');
+        this.messagesLoading.set(false);
+      },
+    });
+  }
+
+  markMessageStatus(msg: Message, status: 'lu' | 'traite'): void {
+    this.updatingMessageId.set(msg.id);
+    this.messageService.updateStatus(msg.id, status).subscribe({
+      next: (updated) => {
+        this.updatingMessageId.set(null);
+        this.messages.update((list) => list.map((m) => (m.id === updated.id ? updated : m)));
+      },
+      error: () => {
+        this.updatingMessageId.set(null);
+      },
+    });
+  }
+
+  deleteMessage(msg: Message): void {
+    if (!confirm(`Supprimer le message de "${msg.name}" ?`)) return;
+
+    this.deletingMessageId.set(msg.id);
+    this.messageService.delete(msg.id).subscribe({
+      next: () => {
+        this.deletingMessageId.set(null);
+        this.fetchMessages();
+      },
+      error: () => {
+        this.deletingMessageId.set(null);
+      },
+    });
+  }
+  
     // --- Utilisateurs : gestion ---
 
   fetchUsers(): void {

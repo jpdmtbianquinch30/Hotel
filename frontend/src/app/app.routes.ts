@@ -42,6 +42,10 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/rules/rules-list/rules-list').then((m) => m.RulesList),
   },
+    {
+    path: 'contact',
+    loadComponent: () => import('./features/contact/contact').then((m) => m.Contact),
+  },
   {
     path: 'admin',
     canActivate: [adminGuard],

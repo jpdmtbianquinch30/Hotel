@@ -7,10 +7,14 @@ use App\Http\Controllers\Api\RoomController;
 use App\Http\Controllers\Api\RuleController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\MessageController;
 
 // Auth
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+
+// Contact & signalements : envoi public (avec ou sans compte), gestion réservée à l'admin
+Route::post('/messages', [MessageController::class, 'store']);
 
 // Chambres : lecture publique (catalogue), écriture réservée à l'admin (dans le contrôleur)
 Route::get('/rooms', [RoomController::class, 'index']);
@@ -29,6 +33,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/me', [AuthController::class, 'updateProfile']);
     Route::post('/me', [AuthController::class, 'updateProfile']); // upload avatar (_method=PUT)
     Route::put('/me/password', [AuthController::class, 'updatePassword']);
+    Route::get('/messages', [MessageController::class, 'index']);
+    Route::patch('/messages/{message}/status', [MessageController::class, 'updateStatus']);
+    Route::delete('/messages/{message}', [MessageController::class, 'destroy']);
 
     Route::post('/rooms', [RoomController::class, 'store']);
     // PUT classique + POST avec _method=PUT (utilisé par le frontend pour l'upload de fichier,

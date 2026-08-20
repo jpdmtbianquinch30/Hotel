@@ -69,6 +69,16 @@
     >
       Règlements
     </button>
+        <button
+      (click)="setTab('messages')"
+      class="px-4 py-2.5 text-sm font-semibold border-b-2 -mb-px transition-colors relative"
+      [class.border-orange-500]="tab() === 'messages'"
+      [class.text-orange-600]="tab() === 'messages'"
+      [class.border-transparent]="tab() !== 'messages'"
+      [class.text-ink-500]="tab() !== 'messages'"
+    >
+      Messages
+    </button>
 
   </div>
 
@@ -734,6 +744,60 @@
 
   }
 
+    @if (tab() === 'messages') {
+    <h2 class="text-xl font-bold text-ink-900 mb-6">Messages & signalements</h2>
+
+    @if (messagesLoading()) {
+      <p class="text-ink-500">Chargement...</p>
+    } @else if (messagesError()) {
+      <p class="text-red-600">{{ messagesError() }}</p>
+    } @else if (messages().length === 0) {
+      <p class="text-ink-500">Aucun message pour le moment.</p>
+    } @else {
+      <div class="space-y-4">
+        @for (m of messages(); track m.id) {
+          <div class="bg-white border border-orange-100 rounded-2xl p-5 shadow-sm">
+            <div class="flex flex-wrap justify-between items-start gap-2 mb-2">
+              <div>
+                <span class="text-xs font-semibold px-2 py-1 rounded-full mr-2"
+                  [class.bg-red-100]="m.type === 'signalement'" [class.text-red-700]="m.type === 'signalement'"
+                  [class.bg-orange-100]="m.type === 'contact'" [class.text-orange-700]="m.type === 'contact'">
+                  {{ m.type === 'signalement' ? 'Signalement' : 'Contact' }}
+                </span>
+                <span class="text-xs font-semibold px-2 py-1 rounded-full bg-ink-100 text-ink-600">
+                  {{ messageStatusLabels[m.status] }}
+                </span>
+              </div>
+              <span class="text-xs text-ink-400">{{ m.created_at | date: 'dd/MM/yyyy HH:mm' }}</span>
+            </div>
+
+            <p class="font-bold text-ink-900">{{ m.subject }}</p>
+            <p class="text-sm text-ink-500 mb-2">{{ m.name }} — {{ m.email }} @if (m.phone) { · {{ m.phone }} }</p>
+            <p class="text-sm text-ink-700 whitespace-pre-line">{{ m.message }}</p>
+
+            <div class="flex gap-3 mt-4">
+              @if (m.status !== 'lu' && m.status !== 'traite') {
+                <button (click)="markMessageStatus(m, 'lu')" [disabled]="updatingMessageId() === m.id"
+                  class="text-xs font-semibold text-orange-600 hover:underline disabled:opacity-50">
+                  Marquer comme lu
+                </button>
+              }
+              @if (m.status !== 'traite') {
+                <button (click)="markMessageStatus(m, 'traite')" [disabled]="updatingMessageId() === m.id"
+                  class="text-xs font-semibold text-green-600 hover:underline disabled:opacity-50">
+                  Marquer comme traité
+                </button>
+              }
+              <button (click)="deleteMessage(m)" [disabled]="deletingMessageId() === m.id"
+                class="text-xs font-semibold text-red-600 hover:underline disabled:opacity-50">
+                Supprimer
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  }
 </section>
 
 
