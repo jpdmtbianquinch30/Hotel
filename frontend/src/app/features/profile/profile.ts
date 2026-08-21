@@ -2,6 +2,9 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../core/services/auth.service';
+import { LikeService } from '../../core/services/like.service';
+import { MyLikes } from '../../core/models/like.model';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-profile',
@@ -20,6 +23,25 @@ export class Profile {
   readonly selectedAvatar = signal<File | null>(null);
   readonly avatarPreview = signal<string | null>(null);
   readonly removeExistingAvatar = signal(false);
+
+    private readonly likeService = inject(LikeService);
+  readonly myLikes = signal<MyLikes>({ rooms: [], gallery: [] });
+  readonly likesLoading = signal(true);
+
+    constructor() {
+    this.fetchLikes();
+  }
+
+  fetchLikes(): void {
+    this.likesLoading.set(true);
+    this.likeService.myLikes().subscribe({
+      next: (res) => {
+        this.myLikes.set(res);
+        this.likesLoading.set(false);
+      },
+      error: () => this.likesLoading.set(false),
+    });
+  }
 
   readonly profileForm = this.fb.nonNullable.group({
     name: ['', Validators.required],

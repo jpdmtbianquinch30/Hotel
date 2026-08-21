@@ -70,12 +70,22 @@
           (click)="openItem(item)"
           class="group bg-white border border-orange-100 rounded-[1.5rem_1.5rem_1.5rem_3rem] overflow-hidden shadow-sm hover:shadow-xl transition-shadow cursor-pointer"
         >
-                    <div class="relative h-52 overflow-hidden">
+          <div class="relative h-52 overflow-hidden">
             <img [src]="item.image" [alt]="item.title"
               class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
             <span class="absolute top-3 left-3 bg-white/90 backdrop-blur text-orange-600 text-[11px] font-semibold uppercase tracking-wide px-3 py-1 rounded-full">
               {{ item.category }}
             </span>
+
+            <button (click)="toggleLike(item, $event)" [disabled]="likingId() === item.id"
+              [attr.aria-label]="item.is_liked ? 'Retirer le like' : 'Aimer cette photo'"
+              class="absolute top-3 right-3 bg-white/90 backdrop-blur rounded-full p-2 hover:bg-white transition-colors disabled:opacity-50">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" [attr.fill]="item.is_liked ? '#f97316' : 'none'"
+                viewBox="0 0 24 24" [attr.stroke]="item.is_liked ? '#f97316' : 'currentColor'" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              </svg>
+            </button>
+
             <div class="absolute inset-x-0 bottom-0 h-24 pointer-events-none"
               style="background: linear-gradient(to bottom, transparent, rgba(33,26,20,0.65));"></div>
           </div>
@@ -83,6 +93,11 @@
             <p class="font-display text-lg font-semibold text-ink-900">{{ item.title }}</p>
             @if (item.description) {
               <p class="text-sm text-ink-500 mt-1 leading-relaxed">{{ item.description }}</p>
+            }
+            @if ((item.likes_count ?? 0) > 0) {
+              <p class="text-xs text-orange-500 font-semibold mt-2">
+                ♥ {{ item.likes_count }} like{{ item.likes_count! > 1 ? 's' : '' }}
+              </p>
             }
           </div>
         </article>
@@ -104,10 +119,27 @@
         </button>
       </div>
       <div class="p-6 overflow-y-auto">
-        <span class="text-orange-600 text-[11px] font-semibold uppercase tracking-wide">{{ item.category }}</span>
-        <h2 class="font-display text-2xl font-semibold text-ink-900 mt-1">{{ item.title }}</h2>
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <span class="text-orange-600 text-[11px] font-semibold uppercase tracking-wide">{{ item.category }}</span>
+            <h2 class="font-display text-2xl font-semibold text-ink-900 mt-1">{{ item.title }}</h2>
+          </div>
+          <button (click)="toggleLike(item, $event)" [disabled]="likingId() === item.id"
+            [attr.aria-label]="item.is_liked ? 'Retirer le like' : 'Aimer cette photo'"
+            class="flex-shrink-0 border border-orange-100 rounded-full p-2.5 hover:bg-orange-50 transition-colors disabled:opacity-50">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" [attr.fill]="item.is_liked ? '#f97316' : 'none'"
+              viewBox="0 0 24 24" [attr.stroke]="item.is_liked ? '#f97316' : 'currentColor'" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg>
+          </button>
+        </div>
         @if (item.description) {
           <p class="text-ink-500 mt-2 leading-relaxed">{{ item.description }}</p>
+        }
+        @if ((item.likes_count ?? 0) > 0) {
+          <p class="text-xs text-orange-500 font-semibold mt-3">
+            ♥ {{ item.likes_count }} like{{ item.likes_count! > 1 ? 's' : '' }}
+          </p>
         }
       </div>
     </div>

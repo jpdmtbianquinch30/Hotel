@@ -20,6 +20,8 @@ export interface Gallery {
   image: string;
   description: string | null;
   is_published: boolean;
+  likes_count?: number;
+  is_liked?: boolean;
   created_at?: string;
   updated_at?: string;
 }

@@ -23,4 +23,8 @@ class Gallery extends Model
             'is_published' => 'boolean',
         ];
     }
+        public function likes()
+    {
+        return $this->morphMany(Like::class, 'likeable');
+    }
 }

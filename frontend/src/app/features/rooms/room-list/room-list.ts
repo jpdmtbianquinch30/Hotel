@@ -28,6 +28,7 @@ export class RoomList {
 
   readonly minPrice = signal<number | null>(null);
   readonly maxPrice = signal<number | null>(null);
+  readonly likingId = signal<number | null>(null);
 
   readonly filteredRooms = computed(() => {
     const min = this.minPrice();
@@ -87,6 +88,26 @@ export class RoomList {
   resetPriceFilter(): void {
     this.minPrice.set(null);
     this.maxPrice.set(null);
+  }
+
+  toggleLike(room: Room, event: Event): void {
+    event.stopPropagation();
+
+    if (!this.auth.isAuthenticated()) {
+      this.router.navigate(['/connexion']);
+      return;
+    }
+
+    this.likingId.set(room.id);
+    this.roomService.toggleLike(room.id).subscribe({
+      next: ({ liked, likes_count }) => {
+        this.likingId.set(null);
+        this.rooms.update((list) =>
+          list.map((r) => (r.id === room.id ? { ...r, is_liked: liked, likes_count } : r))
+        );
+      },
+      error: () => this.likingId.set(null),
+    });
   }
 
   openReservation(room: Room): void {

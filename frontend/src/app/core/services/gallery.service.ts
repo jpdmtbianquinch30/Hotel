@@ -46,4 +46,7 @@ export class GalleryService {
     if (payload.image) formData.append('image', payload.image);
     return formData;
   }
+    toggleLike(id: number): Observable<{ liked: boolean; likes_count: number }> {
+    return this.http.post<{ liked: boolean; likes_count: number }>(`${this.base}/${id}/like`, {});
+  }
 }

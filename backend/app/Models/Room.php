@@ -29,4 +29,8 @@ class Room extends Model
     {
         return $this->hasMany(Reservation::class);
     }
+        public function likes()
+    {
+        return $this->morphMany(Like::class, 'likeable');
+    }
 }

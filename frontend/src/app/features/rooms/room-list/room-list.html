@@ -70,6 +70,15 @@
               <span class="font-display font-semibold text-orange-200 text-2xl">{{ room.room_type }}</span>
             }
 
+            <button (click)="toggleLike(room, $event)" [disabled]="likingId() === room.id"
+              [attr.aria-label]="room.is_liked ? 'Retirer le like' : 'Aimer cette chambre'"
+              class="absolute top-3 left-3 bg-white/90 backdrop-blur rounded-full p-2 hover:bg-white transition-colors disabled:opacity-50">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" [attr.fill]="room.is_liked ? '#f97316' : 'none'"
+                viewBox="0 0 24 24" [attr.stroke]="room.is_liked ? '#f97316' : 'currentColor'" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              </svg>
+            </button>
+
             <span
               class="absolute top-3 right-3 text-[11px] font-semibold px-3 py-1 rounded-full backdrop-blur"
               [class.bg-green-500/90]="room.is_available"
@@ -86,6 +95,12 @@
             <span class="absolute bottom-3 left-4 text-white font-semibold">
               {{ room.price }} FCFA<span class="text-xs font-normal opacity-90"> /nuit</span>
             </span>
+
+            @if ((room.likes_count ?? 0) > 0) {
+              <span class="absolute bottom-3 right-4 text-white text-xs font-semibold flex items-center gap-1">
+                ♥ {{ room.likes_count }}
+              </span>
+            }
           </div>
 
           <div class="p-5 flex flex-col flex-1">

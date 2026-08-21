@@ -5,6 +5,8 @@ export interface Room {
   photo: string | null;
   description: string | null;
   is_available: boolean;
+  likes_count?: number;
+  is_liked?: boolean;
   created_at?: string;
   updated_at?: string;
 }

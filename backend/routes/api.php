@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\MessageController;
 use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Api\LikeController;
 
 // Auth
 Route::post('/register', [AuthController::class, 'register']);
@@ -40,6 +41,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/messages/{message}', [MessageController::class, 'destroy']);
         Route::get('/notifications/admin-summary', [NotificationController::class, 'adminSummary']);
 
+            Route::post('/rooms/{room}/like', [RoomController::class, 'toggleLike']);
+    Route::post('/gallery/{gallery}/like', [GalleryController::class, 'toggleLike']);
+    Route::get('/me/likes', [LikeController::class, 'myLikes']);
+    
     Route::post('/rooms', [RoomController::class, 'store']);
     // PUT classique + POST avec _method=PUT (utilisé par le frontend pour l'upload de fichier,
     // Laravel ne lit pas $_FILES sur une vraie requête PUT multipart).

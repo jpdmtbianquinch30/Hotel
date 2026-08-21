@@ -18,7 +18,45 @@ class GalleryController extends Controller
             $query->where('category', $request->string('category'));
         }
 
-        return response()->json($query->latest()->get());
+        $items = $query->withCount('likes')->latest()->get();
+        $this->appendIsLiked($request, $items);
+
+        return response()->json($items);
+    }
+     public function show(Request $request, Gallery $gallery)
+    {
+        $gallery->loadCount('likes');
+        $this->appendIsLiked($request, collect([$gallery]));
+
+        return response()->json($gallery);
+    }
+    public function toggleLike(Request $request, Gallery $gallery)
+    {
+        $user = $request->user();
+        $existing = $gallery->likes()->where('user_id', $user->id)->first();
+
+        if ($existing) {
+            $existing->delete();
+            $liked = false;
+        } else {
+            $gallery->likes()->create(['user_id' => $user->id]);
+            $liked = true;
+        }
+
+        return response()->json([
+            'liked' => $liked,
+            'likes_count' => $gallery->likes()->count(),
+        ]);
+    }
+
+    private function appendIsLiked(Request $request, $items): void
+    {
+        $user = $request->user('sanctum');
+        $likedIds = $user
+            ? $user->likes()->where('likeable_type', Gallery::class)->pluck('likeable_id')
+            : collect();
+
+        $items->each(fn ($item) => $item->is_liked = $likedIds->contains($item->id));
     }
 
     /** Liste admin : toutes les images (publiées ou non), pour la gestion. */
@@ -29,10 +67,6 @@ class GalleryController extends Controller
         return response()->json(Gallery::latest()->get());
     }
 
-    public function show(Gallery $gallery)
-    {
-        return response()->json($gallery);
-    }
 
     public function store(Request $request)
     {

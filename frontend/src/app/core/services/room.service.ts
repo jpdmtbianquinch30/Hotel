@@ -46,4 +46,7 @@ export class RoomService {
   delete(id: number): Observable<{ message: string }> {
     return this.http.delete<{ message: string }>(`${this.base}/${id}`);
   }
+    toggleLike(id: number): Observable<{ liked: boolean; likes_count: number }> {
+    return this.http.post<{ liked: boolean; likes_count: number }>(`${this.base}/${id}/like`, {});
+  }
 }

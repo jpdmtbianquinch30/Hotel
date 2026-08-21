@@ -9,14 +9,47 @@ use Illuminate\Support\Facades\Storage;
 
 class RoomController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return response()->json(Room::orderBy('price')->get());
+        $rooms = Room::withCount('likes')->orderBy('price')->get();
+        $this->appendIsLiked($request, $rooms);
+
+        return response()->json($rooms);
     }
 
-    public function show(Room $room)
+    public function show(Request $request, Room $room)
     {
+        $room->loadCount('likes');
+        $this->appendIsLiked($request, collect([$room]));
+
         return response()->json($room);
+    }
+    public function toggleLike(Request $request, Room $room)
+    {
+        $user = $request->user();
+        $existing = $room->likes()->where('user_id', $user->id)->first();
+
+        if ($existing) {
+            $existing->delete();
+            $liked = false;
+        } else {
+            $room->likes()->create(['user_id' => $user->id]);
+            $liked = true;
+        }
+
+        return response()->json([
+            'liked' => $liked,
+            'likes_count' => $room->likes()->count(),
+        ]);
+    }
+     private function appendIsLiked(Request $request, $rooms): void
+    {
+        $user = $request->user('sanctum');
+        $likedIds = $user
+            ? $user->likes()->where('likeable_type', Room::class)->pluck('likeable_id')
+            : collect();
+
+        $rooms->each(fn ($room) => $room->is_liked = $likedIds->contains($room->id));
     }
 
     public function store(Request $request)
